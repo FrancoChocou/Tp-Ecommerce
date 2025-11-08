@@ -53,7 +53,7 @@ public class ProductoController {
      * @return Lista de todos los productos en el sistema 
      * @throws ServiceException Si ocurre un error al obtener los productos 
      */
-    public List<Producto> buscarTodosProductos() throws ServiceException {
+    public List<Producto> listarTodos() throws ServiceException {
         return productoService.buscarTodosProductos();
     }
     
@@ -85,7 +85,7 @@ public class ProductoController {
      * @return Lista de productos que coinciden con la búsqueda 
      * @throws ServiceException Si ocurre un error al buscar los productos 
      */
-    public List<Producto> buscarProductosPorNombre(String nombre) throws ServiceException {
+    public List<Producto> buscarPorNombre(String nombre) throws ServiceException {
         return productoService.buscarProductosPorNombre(nombre);
     }
     

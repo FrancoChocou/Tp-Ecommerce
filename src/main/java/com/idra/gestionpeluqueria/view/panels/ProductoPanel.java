@@ -23,11 +23,13 @@ public class ProductoPanel extends JPanel {
     private JButton btnAgregar, btnEditar, btnEliminar, btnActivarDesactivar, btnBuscar;
     private JTextField txtBuscar;
     private JComboBox<String> comboFiltroCategoria;
+    private ProductoController productoController;
     
     /**
      * Constructor que inicializa el panel de productos y sus componentes.
      */
     public ProductoPanel() {
+        this.productoController = new ProductoController();
         initializeUI();
     }
 
@@ -293,8 +295,7 @@ public class ProductoPanel extends JPanel {
 
         if (confirmacion == JOptionPane.YES_OPTION) {
             try {
-                ProductoController controller = new ProductoController();
-                controller.eliminarProducto(idProducto);
+                productoController.eliminarProducto(idProducto);
                 
                 tableModel.removeRow(filaSeleccionada);
                 
@@ -324,10 +325,9 @@ public class ProductoPanel extends JPanel {
         String nuevoEstado = estadoActual.equals("Activo") ? "Inactivo" : "Activo";
         
         try {
-            ProductoController controller = new ProductoController();
-            Producto producto = controller.buscarProductoPorId(idProducto);
+            Producto producto = productoController.buscarProductoPorId(idProducto);
             producto.setActivo(nuevoEstado.equals("Activo"));
-            controller.actualizarProducto(producto);
+            productoController.actualizarProducto(producto);
             
             tableModel.setValueAt(nuevoEstado, fila, 6);
             
@@ -350,8 +350,7 @@ public class ProductoPanel extends JPanel {
         // En una implementación real, se haría una consulta a la base de datos
         try {
             tableModel.setRowCount(0);
-            ProductoController controller = new ProductoController();
-            List<Producto> productos = controller.buscarTodosProductos();
+            List<Producto> productos = productoController.listarTodos();
             
             for (Producto producto : productos) {
                 String nombreCategoria = obtenerNombreCategoriaPorId(producto.getIdCategoria());
@@ -386,8 +385,8 @@ public class ProductoPanel extends JPanel {
 
         try {
             tableModel.setRowCount(0);
-            ProductoController controller = new ProductoController();
-            List<Producto> productos = controller.buscarProductosPorNombre(textoBusqueda);
+            // USANDO MÉTODO CORREGIDO
+            List<Producto> productos = productoController.buscarPorNombre(textoBusqueda);
             
             for (Producto producto : productos) {
                 Object[] fila = {
@@ -416,8 +415,8 @@ public class ProductoPanel extends JPanel {
     public void actualizarTabla() {
         try {
             tableModel.setRowCount(0);
-            ProductoController controller = new ProductoController();
-            List<Producto> productos = controller.buscarTodosProductos();
+            // USANDO MÉTODO CORREGIDO
+            List<Producto> productos = productoController.listarTodos();
             
             for (Producto producto : productos) {
                 Object[] fila = {

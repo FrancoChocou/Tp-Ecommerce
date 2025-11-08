@@ -23,11 +23,13 @@ public class ClientePanel extends JPanel {
     private DefaultTableModel tableModel;
     private JButton btnAgregar, btnEditar, btnEliminar, btnBuscar;
     private JTextField txtBuscar;
+    private ClienteController clienteController;
     
     /**
      * Constructor que inicializa el panel de clientes y sus componentes.
      */
     public ClientePanel() {
+        this.clienteController = new ClienteController();
         initializeUI();
     }
 
@@ -41,8 +43,8 @@ public class ClientePanel extends JPanel {
         createTablePanel();
         createToolbar();
 
-        // Cargar datos de ejemplo
-        cargarDatosEjemplo();
+        // Cargar datos iniciales
+        actualizarTabla();
     }
 
     private void createHeaderPanel() {
@@ -168,26 +170,6 @@ public class ClientePanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void cargarDatosEjemplo() {
-        // Limpiar tabla
-        tableModel.setRowCount(0);
-
-        // Datos de ejemplo ACTUALIZADOS con edad y zona
-        Object[][] datosEjemplo = {
-            {1, "María", "González", "123456789", "maria.gonzalez@email.com", 28, 1, "2024-01-15", "Sí"},
-            {2, "Carlos", "López", "987654321", "carlos.lopez@email.com", 35, 2, "2024-01-16", "Sí"},
-            {3, "Ana", "Martínez", "555444333", "ana.martinez@email.com", 22, 1, "2024-01-17", "Sí"},
-            {4, "Pedro", "Rodríguez", "111222333", "pedro.rodriguez@email.com", 45, 3, "2024-01-18", "Sí"},
-            {5, "Laura", "Fernández", "444555666", "laura.fernandez@email.com", 31, 2, "2024-01-19", "Sí"},
-            {6, "Diego", "Sánchez", "777888999", "diego.sanchez@email.com", 29, 1, "2024-01-20", "Sí"},
-            {7, "Elena", "Ramírez", "222333444", "elena.ramirez@email.com", 38, 3, "2024-01-21", "Sí"}
-        };
-
-        for (Object[] fila : datosEjemplo) {
-            tableModel.addRow(fila);
-        }
-    }
-
     private void abrirDialogoCliente(Object[] datosCliente) {
         Cliente cliente = null;
         String titulo = "Agregar Cliente";
@@ -263,8 +245,7 @@ public class ClientePanel extends JPanel {
         if (confirmacion == JOptionPane.YES_OPTION) {
             try {
                 // Eliminar de la base de datos
-                ClienteController controller = new ClienteController();
-                controller.eliminarCliente(idCliente);
+                clienteController.eliminarCliente(idCliente);
                 
                 // Eliminar de la tabla visual
                 tableModel.removeRow(filaSeleccionada);
@@ -286,31 +267,44 @@ public class ClientePanel extends JPanel {
     private void buscarClientes() {
         String textoBusqueda = txtBuscar.getText().trim().toLowerCase();
         if (textoBusqueda.isEmpty()) {
-            cargarDatosEjemplo();
+            actualizarTabla();
             return;
         }
 
-        // Filtrar datos 
-        for (int i = tableModel.getRowCount() - 1; i >= 0; i--) {
-            String nombre = tableModel.getValueAt(i, 1).toString().toLowerCase();
-            String apellido = tableModel.getValueAt(i, 2).toString().toLowerCase();
-            String telefono = tableModel.getValueAt(i, 3).toString().toLowerCase();
-            String email = tableModel.getValueAt(i, 4).toString().toLowerCase();
-
-            if (!nombre.contains(textoBusqueda) && 
-                !apellido.contains(textoBusqueda) && 
-                !telefono.contains(textoBusqueda) &&
-                !email.contains(textoBusqueda)) {
-                tableModel.removeRow(i);
+        try {
+            // Usar el método corregido del controller
+            List<Cliente> clientesEncontrados = clienteController.buscarPorNombre(textoBusqueda);
+            
+            // Limpiar tabla y mostrar resultados
+            tableModel.setRowCount(0);
+            for (Cliente cliente : clientesEncontrados) {
+                Object[] fila = {
+                    cliente.getId(),
+                    cliente.getNombre(),
+                    cliente.getApellido(),
+                    cliente.getTelefono(),
+                    cliente.getEmail(),
+                    cliente.getEdad(),
+                    cliente.getIdZona(),
+                    cliente.getFechaRegistro(),
+                    cliente.isActivo() ? "Sí" : "No"
+                };
+                tableModel.addRow(fila);
             }
-        }
 
-        if (tableModel.getRowCount() == 0) {
+            if (tableModel.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this,
+                    "No se encontraron clientes que coincidan con la búsqueda: " + textoBusqueda,
+                    "Búsqueda Sin Resultados",
+                    JOptionPane.INFORMATION_MESSAGE);
+                actualizarTabla();
+            }
+            
+        } catch (ServiceException e) {
             JOptionPane.showMessageDialog(this,
-                "No se encontraron clientes que coincidan con la búsqueda: " + textoBusqueda,
-                "Búsqueda Sin Resultados",
-                JOptionPane.INFORMATION_MESSAGE);
-            cargarDatosEjemplo();
+                "Error al buscar clientes: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -322,9 +316,8 @@ public class ClientePanel extends JPanel {
         try {
             tableModel.setRowCount(0); // Limpiar tabla
             
-            // Obtener clientes reales de la base de datos
-            ClienteController controller = new ClienteController();
-            List<Cliente> clientes = controller.obtenerTodosClientes();
+            // Obtener clientes reales de la base de datos - USANDO MÉTODO CORREGIDO
+            List<Cliente> clientes = clienteController.listarTodos();
             
             // Llenar la tabla con datos reales
             for (Cliente cliente : clientes) {

@@ -10,8 +10,6 @@ import com.idra.gestionpeluqueria.exception.ServiceException;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -182,8 +180,8 @@ public class VentaDialog extends JDialog {
 
     private void cargarCombos() {
         try {
-            // Cargar clientes
-            List<Cliente> clientes = clienteController.buscarTodosClientes();
+            // Cargar clientes - USANDO MÉTODO CORREGIDO
+            List<Cliente> clientes = clienteController.listarTodos();
             comboCliente.removeAllItems();
             for (Cliente cliente : clientes) {
                 comboCliente.addItem(cliente);
@@ -235,7 +233,8 @@ public class VentaDialog extends JDialog {
         String nombre = JOptionPane.showInputDialog(this, "Buscar cliente por nombre:");
         if (nombre != null && !nombre.trim().isEmpty()) {
             try {
-                List<Cliente> clientes = clienteController.buscarClientesPorNombre(nombre.trim());
+                // USANDO MÉTODO CORREGIDO
+                List<Cliente> clientes = clienteController.buscarPorNombre(nombre.trim());
                 if (clientes.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "No se encontraron clientes", "Búsqueda", JOptionPane.INFORMATION_MESSAGE);
                 } else {

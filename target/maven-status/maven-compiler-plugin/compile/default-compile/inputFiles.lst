@@ -1,5 +1,4 @@
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\controller\ClienteController.java
-R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\view\dialogs\TurnoDialog.java
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\view\panels\ClientePanel.java
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\controller\VentaController.java
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\view\panels\VentaPanel.java
@@ -16,6 +15,7 @@ R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idr
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\model\enums\EstadoTurno.java
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\config\DatabaseConfig.java
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\model\Venta.java
+R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\view\dialogs\VentaDialog.java
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\service\impl\ClienteServiceImpl.java
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\service\VentaService.java
 R:\Descargas\PeluqueriaFinalizado-master\GestionPeluqueria\src\main\java\com\idra\gestionpeluqueria\GestionPeluqueria.java

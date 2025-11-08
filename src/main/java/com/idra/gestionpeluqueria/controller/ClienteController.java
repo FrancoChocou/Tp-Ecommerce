@@ -39,7 +39,7 @@ public class ClienteController {
      * @return Lista de todos los clientes
      * @throws ServiceException Si ocurre un error al obtener los clientes
      */
-    public List<Cliente> obtenerTodosClientes() throws ServiceException {
+    public List<Cliente> listarTodos() throws ServiceException {
         return clienteService.buscarTodosClientes();
     }
     
@@ -49,7 +49,7 @@ public class ClienteController {
      * @return Lista de clientes que coinciden con la búsqueda
      * @throws ServiceException Si ocurre un error al buscar los clientes
      */
-    public List<Cliente> buscarClientesPorNombre(String nombre) throws ServiceException {
+    public List<Cliente> buscarPorNombre(String nombre) throws ServiceException {
         return clienteService.buscarClientesPorNombre(nombre);
     }
     

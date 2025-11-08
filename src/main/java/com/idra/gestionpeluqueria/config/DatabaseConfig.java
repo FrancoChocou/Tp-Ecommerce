@@ -4,16 +4,18 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+
 /**
  * Clase de configuracion para la gestion de conexiones a la base de datos.
  * Implementa el patron Singleton para asegurar una unica instancia de conexion.
- * Gestiona la conexion a MySQL para el sistema gestion de peluqueria.
+ * Gestiona la conexion a MySQL para el sistema gestion de e-commerce.
+ * 
  * @author Idra
  */
 public class DatabaseConfig {
-    private static final String URL = "jdbc:mysql://localhost:3306/peluqueria_db";
+    private static final String URL = "jdbc:mysql://localhost:3306/ecommerce_stats";
     private static final String USER = "root";
-    private static final String PASSWORD = "4899380aaron";
+    private static final String PASSWORD = "1235";
     
     private static DatabaseConfig instance;
     private Connection connection;
@@ -49,7 +51,7 @@ public class DatabaseConfig {
      * Obtiene la instancia unica de DatabaseConfig (patron Singleton).
      * Si no existe una instancia, la crea de forma sincronizada.
      * 
-     * @return 
+     * @return Instancia de DatabaseConfig
      */
     public static DatabaseConfig getInstance() {
         if (instance == null) {
@@ -66,7 +68,7 @@ public class DatabaseConfig {
      * Obtiene la conexion activa a la base de datos.
      * Si la conexion esta cerrada o es nula, intenta reconectar automaticamente.
      * 
-     * @return 
+     * @return Conexión a la base de datos
      */
     public Connection getConnection() {
         try {
@@ -107,7 +109,8 @@ public class DatabaseConfig {
     /**
      * Realiza una prueba de conexion a la base de datos.
      * Verifica que la conexion pueda establecerse y este operativa.
-     * @return 
+     * 
+     * @return true si la conexión es exitosa, false en caso contrario
      */
     public static boolean testConnection() {
         try (Connection conn = getInstance().getConnection()) {

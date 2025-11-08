@@ -22,11 +22,17 @@ public class DashboardPanel extends JPanel {
     private JLabel lblPromedioVentas, lblDesviacionEstandar, lblCorrelacionPrecioCantidad, lblCorrelacionDiaCantidad;
     private JLabel lblFechaActual;
     private JPanel statsPanel, analyticsPanel, quickActionsPanel, chartsPanel;
+    private ClienteController clienteController;
+    private ProductoController productoController;
+    private VentaController ventaController;
     
     /**
      * Constructor que inicializa el panel del dashboard y sus componentes.
      */
     public DashboardPanel() {
+        this.clienteController = new ClienteController();
+        this.productoController = new ProductoController();
+        this.ventaController = new VentaController();
         initializeUI();
     }
 
@@ -282,13 +288,8 @@ public class DashboardPanel extends JPanel {
         actualizarFecha();
         
         try {
-            // Controladores
-            ClienteController clienteController = new ClienteController();
-            ProductoController productoController = new ProductoController();
-            VentaController ventaController = new VentaController();
-
-            // Datos básicos
-            int totalClientes = clienteController.buscarTodosClientes().size();
+            // Datos básicos - USANDO MÉTODOS CORREGIDOS
+            int totalClientes = clienteController.listarTodos().size();
             int totalProductos = productoController.buscarProductosActivos().size();
             int ventasHoy = ventaController.buscarVentasPorFecha(LocalDate.now()).size();
             double ingresosHoy = ventaController.calcularTotalVentasHoy();
