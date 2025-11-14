@@ -110,11 +110,12 @@ public class ClienteDialog extends JDialog {
         formPanel.add(txtEdad, gbc);
         
         // Zona - NUEVO CAMPO
-        gbc.gridx = 0; gbc.gridy = 5;
-        formPanel.add(new JLabel("Zona (ID):"), gbc);
-        gbc.gridx = 1;
-        txtZona = new JTextField(20);
-        formPanel.add(txtZona, gbc);
+       gbc.gridx = 0; gbc.gridy = 5;
+formPanel.add(new JLabel("Ciudad:"), gbc); // ← CAMBIADO DEFINITIVAMENTE
+gbc.gridx = 1;
+txtZona = new JTextField(20);
+txtZona.setToolTipText("Ingrese la ciudad del cliente (solo letras y números)");
+formPanel.add(txtZona, gbc);
         
         return formPanel;
     }
@@ -214,72 +215,74 @@ public class ClienteDialog extends JDialog {
     }
 
     private boolean validarCampos() {
-        if (!Validator.isNotEmpty(txtNombre.getText())) {
-            mostrarError("El nombre es obligatorio");
-            txtNombre.requestFocus();
-            return false;
-        }
-        
-        if (!Validator.isValidName(txtNombre.getText())) {
-            mostrarError("El nombre solo puede contener letras y espacios");
-            txtNombre.requestFocus();
-            return false;
-        }
-        
-        if (!Validator.isNotEmpty(txtApellido.getText())) {
-            mostrarError("El apellido es obligatorio");
-            txtApellido.requestFocus();
-            return false;
-        }
-        
-        if (!Validator.isValidName(txtApellido.getText())) {
-            mostrarError("El apellido solo puede contener letras y espacios");
-            txtApellido.requestFocus();
-            return false;
-        }
-        
-        if (!Validator.isValidPhone(txtTelefono.getText())) {
-            mostrarError("El teléfono debe tener entre 10 y 15 dígitos");
-            txtTelefono.requestFocus();
-            return false;
-        }
-        
-        String email = txtEmail.getText().trim();
-        if (!email.isEmpty() && !Validator.isValidEmail(email)) {
-            mostrarError("El formato del email no es válido");
-            txtEmail.requestFocus();
-            return false;
-        }
-        
-        // Validaciones NUEVAS para edad y zona
-        try {
-            int edad = Integer.parseInt(txtEdad.getText().trim());
-            if (edad < 0 || edad > 120) {
-                mostrarError("La edad debe estar entre 0 y 120 años");
-                txtEdad.requestFocus();
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            mostrarError("La edad debe ser un número válido");
+    if (!Validator.isNotEmpty(txtNombre.getText())) {
+        mostrarError("El nombre es obligatorio");
+        txtNombre.requestFocus();
+        return false;
+    }
+    
+    if (!Validator.isValidName(txtNombre.getText())) {
+        mostrarError("El nombre solo puede contener letras y espacios");
+        txtNombre.requestFocus();
+        return false;
+    }
+    
+    if (!Validator.isNotEmpty(txtApellido.getText())) {
+        mostrarError("El apellido es obligatorio");
+        txtApellido.requestFocus();
+        return false;
+    }
+    
+    if (!Validator.isValidName(txtApellido.getText())) {
+        mostrarError("El apellido solo puede contener letras y espacios");
+        txtApellido.requestFocus();
+        return false;
+    }
+    
+    if (!Validator.isValidPhone(txtTelefono.getText())) {
+        mostrarError("El teléfono debe tener entre 10 y 15 dígitos");
+        txtTelefono.requestFocus();
+        return false;
+    }
+    
+    String email = txtEmail.getText().trim();
+    if (!email.isEmpty() && !Validator.isValidEmail(email)) {
+        mostrarError("El formato del email no es válido");
+        txtEmail.requestFocus();
+        return false;
+    }
+    
+    // Validación para edad
+    try {
+        int edad = Integer.parseInt(txtEdad.getText().trim());
+        if (edad < 0 || edad > 120) {
+            mostrarError("La edad debe estar entre 0 y 120 años");
             txtEdad.requestFocus();
             return false;
         }
-        
-        try {
-            int zona = Integer.parseInt(txtZona.getText().trim());
-            if (zona <= 0) {
-                mostrarError("La zona debe ser un número mayor a 0");
-                txtZona.requestFocus();
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            mostrarError("La zona debe ser un número válido");
-            txtZona.requestFocus();
-            return false;
-        }
-        
-        return true;
+    } catch (NumberFormatException e) {
+        mostrarError("La edad debe ser un número válido");
+        txtEdad.requestFocus();
+        return false;
     }
+    
+    // VALIDACIÓN MODIFICADA PARA CIUDAD - SOLO LETRAS Y NÚMEROS
+    String ciudad = txtZona.getText().trim();
+    if (ciudad.isEmpty()) {
+        mostrarError("La ciudad es obligatoria");
+        txtZona.requestFocus();
+        return false;
+    }
+    
+    // SOLO PERMITIR LETRAS, NÚMEROS Y ESPACIOS
+    if (!ciudad.matches("^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\\s]+$")) {
+        mostrarError("La ciudad solo puede contener letras, números y espacios");
+        txtZona.requestFocus();
+        return false;
+    }
+    
+    return true;
+}
 
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, 

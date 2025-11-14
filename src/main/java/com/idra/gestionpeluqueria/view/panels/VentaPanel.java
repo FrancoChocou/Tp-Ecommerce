@@ -9,23 +9,26 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
- * Panel para la gestion de ventas del e-commerce.
- * Proporciona una interfaz para visualizar, crear, editar y eliminar ventas.
- * Incluye funcionalidades de filtrado por producto y busqueda por cliente.
- * 
+ * Panel para la gestion de ventas del e-commerce. Proporciona una interfaz para
+ * visualizar, crear, editar y eliminar ventas. Incluye funcionalidades de
+ * filtrado por producto y busqueda por cliente.
+ *
  * @author Idra
  */
 public class VentaPanel extends JPanel {
+
     private JTable tablaVentas;
     private DefaultTableModel tableModel;
     private JButton btnNuevaVenta, btnEditar, btnEliminar, btnBuscar;
     private JTextField txtBuscar;
     private JComboBox<String> comboFiltroProducto;
-    
+
     /**
-     * Constructor que inicializa el panel de ventas, sus componentes y carga los datos iniciales.
+     * Constructor que inicializa el panel de ventas, sus componentes y carga
+     * los datos iniciales.
      */
     public VentaPanel() {
         initializeUI();
@@ -34,7 +37,7 @@ public class VentaPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout(10, 10));
-        setBackground(new Color(240, 240, 240));
+        setBackground(new Color(230, 240, 255)); // CELESTE CLARO EN LUGAR DE GRIS
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         createHeaderPanel();
@@ -48,7 +51,7 @@ public class VentaPanel extends JPanel {
 
     private void createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(240, 240, 240));
+        headerPanel.setBackground(new Color(230, 240, 255)); // CELESTE CLARO
 
         JLabel titleLabel = new JLabel("Gestión de Ventas");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -138,6 +141,7 @@ public class VentaPanel extends JPanel {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(color.darker());
             }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(color);
             }
@@ -146,41 +150,79 @@ public class VentaPanel extends JPanel {
     }
 
     private void createTablePanel() {
-        String[] columnNames = {"ID", "Fecha/Hora", "Cliente", "Producto", "Cantidad", "Precio Unit.", "Total", "Método Pago"};
-        tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+    String[] columnNames = {"ID", "Fecha/Hora", "Cliente", "Producto", "Cantidad", "Precio Unit.", "Total", "Método Pago"};
+    tableModel = new DefaultTableModel(columnNames, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
 
-        tablaVentas = new JTable(tableModel);
-        tablaVentas.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        tablaVentas.setRowHeight(35);
-        tablaVentas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tablaVentas.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-        tablaVentas.getTableHeader().setBackground(new Color(70, 130, 180));
-        tablaVentas.getTableHeader().setForeground(Color.WHITE);
-
-        JScrollPane scrollPane = new JScrollPane(tablaVentas);
-        add(scrollPane, BorderLayout.CENTER);
-    }
+    tablaVentas = new JTable(tableModel);
     
+    // MEJORAS EN EL DISEÑO DE LA TABLA
+    tablaVentas.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    tablaVentas.setRowHeight(35);
+    tablaVentas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    
+    // HEADER MEJORADO
+    tablaVentas.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+    tablaVentas.getTableHeader().setBackground(new Color(50, 50, 50));
+    tablaVentas.getTableHeader().setForeground(Color.WHITE);
+    tablaVentas.getTableHeader().setReorderingAllowed(false);
+    
+    // COLORES DE LA TABLA
+    tablaVentas.setBackground(new Color(250, 250, 250));
+    tablaVentas.setForeground(Color.BLACK);
+    tablaVentas.setGridColor(new Color(220, 220, 220));
+    tablaVentas.setSelectionBackground(new Color(70, 130, 180));
+    tablaVentas.setSelectionForeground(Color.WHITE);
+    tablaVentas.setFillsViewportHeight(true);
+
+    JScrollPane scrollPane = new JScrollPane(tablaVentas);
+    scrollPane.getViewport().setBackground(new Color(250, 250, 250));
+    
+    // COLOR DE FONDO DEL PANEL PRINCIPAL
+    setBackground(new Color(230, 240, 255));
+
+    add(scrollPane, BorderLayout.CENTER);
+    
+    // ⭐⭐ RENDERER DEBE IR AL FINAL - DESPUÉS DE QUE LA TABLA ESTÉ COMPLETAMENTE CREADA ⭐⭐
+    tablaVentas.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            
+            if (!isSelected) {
+                c.setForeground(Color.BLACK);
+                c.setBackground(Color.WHITE);
+            } else {
+                c.setForeground(Color.WHITE);
+                c.setBackground(new Color(70, 130, 180));
+            }
+            
+            return c;
+        }
+    });
+}
+
     /**
-     * Actualiza la tabla de ventas con los datos más recientes de la base de datos.
-     * Limpia la tabla actual y la llena con todas las ventas registradas,
-     * mostrando información completa de cada venta incluyendo cliente, producto y montos.
+     * Actualiza la tabla de ventas con los datos más recientes de la base de
+     * datos. Limpia la tabla actual y la llena con todas las ventas
+     * registradas, mostrando información completa de cada venta incluyendo
+     * cliente, producto y montos.
      */
     public final void actualizarTabla() {
         try {
             tableModel.setRowCount(0); // Limpiar tabla
-            
+
             // Obtener ventas REALES de la base de datos
             VentaController controller = new VentaController();
             List<Venta> ventas = controller.buscarTodasVentas();
-            
+
             System.out.println("🔄 VentaPanel - Ventas encontradas en BD: " + ventas.size());
-            
+
             // Llenar la tabla con datos REALES
             for (Venta venta : ventas) {
                 Object[] fila = {
@@ -195,22 +237,22 @@ public class VentaPanel extends JPanel {
                 };
                 tableModel.addRow(fila);
             }
-            
+
             System.out.println("✅ VentaPanel - Tabla actualizada con " + tableModel.getRowCount() + " ventas");
-            
+
         } catch (ServiceException e) {
             System.err.println("❌ Error al actualizar tabla de ventas: " + e.getMessage());
-            JOptionPane.showMessageDialog(this, 
-                "Error al cargar ventas: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar ventas: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void abrirDialogoVenta(Object[] datosVenta) {
         Venta venta = null;
         String titulo = "Nueva Venta";
-        
+
         if (datosVenta != null) {
             try {
                 // Para editar, buscar la venta completa de la BD
@@ -220,22 +262,22 @@ public class VentaPanel extends JPanel {
                 titulo = "Editar Venta";
             } catch (ServiceException e) {
                 JOptionPane.showMessageDialog(this,
-                    "Error al cargar venta: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                        "Error al cargar venta: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
-        
+
         Window parentWindow = SwingUtilities.getWindowAncestor(this);
         JFrame parentFrame = null;
         if (parentWindow instanceof JFrame) {
             parentFrame = (JFrame) parentWindow;
         }
-        
+
         VentaDialog dialog = new VentaDialog(parentFrame, titulo, venta);
         dialog.setVisible(true);
-        
+
         if (dialog.isGuardadoExitoso()) {
             actualizarTabla(); // Refrescar la tabla
         }
@@ -245,9 +287,9 @@ public class VentaPanel extends JPanel {
         int filaSeleccionada = tablaVentas.getSelectedRow();
         if (filaSeleccionada == -1) {
             JOptionPane.showMessageDialog(this,
-                "Por favor, seleccione una venta para editar.",
-                "Selección Requerida",
-                JOptionPane.WARNING_MESSAGE);
+                    "Por favor, seleccione una venta para editar.",
+                    "Selección Requerida",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -264,9 +306,9 @@ public class VentaPanel extends JPanel {
         int filaSeleccionada = tablaVentas.getSelectedRow();
         if (filaSeleccionada == -1) {
             JOptionPane.showMessageDialog(this,
-                "Por favor, seleccione una venta para eliminar.",
-                "Selección Requerida",
-                JOptionPane.WARNING_MESSAGE);
+                    "Por favor, seleccione una venta para eliminar.",
+                    "Selección Requerida",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -275,30 +317,30 @@ public class VentaPanel extends JPanel {
         String producto = tableModel.getValueAt(filaSeleccionada, 3).toString();
 
         int confirmacion = JOptionPane.showConfirmDialog(this,
-            "¿Está seguro que desea eliminar la venta de " + producto + " para " + cliente + "?",
-            "Confirmar Eliminación",
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
+                "¿Está seguro que desea eliminar la venta de " + producto + " para " + cliente + "?",
+                "Confirmar Eliminación",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
 
         if (confirmacion == JOptionPane.YES_OPTION) {
             try {
                 // Eliminar en la base de datos
                 VentaController controller = new VentaController();
                 controller.eliminarVenta(idVenta);
-                
+
                 // Actualizar la tabla completa desde BD
                 actualizarTabla();
-                
+
                 JOptionPane.showMessageDialog(this,
-                    "Venta eliminada correctamente.",
-                    "Eliminación Exitosa",
-                    JOptionPane.INFORMATION_MESSAGE);
-                    
+                        "Venta eliminada correctamente.",
+                        "Eliminación Exitosa",
+                        JOptionPane.INFORMATION_MESSAGE);
+
             } catch (ServiceException e) {
                 JOptionPane.showMessageDialog(this,
-                    "Error al eliminar venta: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                        "Error al eliminar venta: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -312,10 +354,10 @@ public class VentaPanel extends JPanel {
 
         try {
             tableModel.setRowCount(0); // Limpiar tabla
-            
+
             VentaController controller = new VentaController();
             List<Venta> todasVentas = controller.buscarTodasVentas();
-            
+
             // Filtrar localmente por nombre de producto
             for (Venta venta : todasVentas) {
                 if (venta.getProducto().getNombre().equals(productoSelleccionado)) {
@@ -332,19 +374,19 @@ public class VentaPanel extends JPanel {
                     tableModel.addRow(fila);
                 }
             }
-            
+
             if (tableModel.getRowCount() == 0) {
                 JOptionPane.showMessageDialog(this,
-                    "No se encontraron ventas para el producto: " + productoSelleccionado,
-                    "Sin Resultados",
-                    JOptionPane.INFORMATION_MESSAGE);
+                        "No se encontraron ventas para el producto: " + productoSelleccionado,
+                        "Sin Resultados",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
-            
+
         } catch (ServiceException e) {
             JOptionPane.showMessageDialog(this,
-                "Error al filtrar ventas: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+                    "Error al filtrar ventas: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -357,15 +399,15 @@ public class VentaPanel extends JPanel {
 
         try {
             tableModel.setRowCount(0); // Limpiar tabla
-            
+
             VentaController controller = new VentaController();
             List<Venta> todasVentas = controller.buscarTodasVentas();
-            
+
             // Filtrar localmente por nombre de cliente
             for (Venta venta : todasVentas) {
-                String nombreCliente = venta.getCliente().getNombre().toLowerCase() + " " + 
-                                     venta.getCliente().getApellido().toLowerCase();
-                
+                String nombreCliente = venta.getCliente().getNombre().toLowerCase() + " "
+                        + venta.getCliente().getApellido().toLowerCase();
+
                 if (nombreCliente.contains(textoBusqueda)) {
                     Object[] fila = {
                         venta.getId(),
@@ -380,20 +422,20 @@ public class VentaPanel extends JPanel {
                     tableModel.addRow(fila);
                 }
             }
-            
+
             if (tableModel.getRowCount() == 0) {
                 JOptionPane.showMessageDialog(this,
-                    "No se encontraron ventas que coincidan con: " + textoBusqueda,
-                    "Sin Resultados",
-                    JOptionPane.INFORMATION_MESSAGE);
+                        "No se encontraron ventas que coincidan con: " + textoBusqueda,
+                        "Sin Resultados",
+                        JOptionPane.INFORMATION_MESSAGE);
                 actualizarTabla();
             }
-            
+
         } catch (ServiceException e) {
             JOptionPane.showMessageDialog(this,
-                "Error al buscar ventas: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+                    "Error al buscar ventas: " + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

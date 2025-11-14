@@ -1,3 +1,4 @@
+com\idra\gestionpeluqueria\view\panels\ClientePanel$3.class
 com\idra\gestionpeluqueria\view\dialogs\VentaDialog$1.class
 com\idra\gestionpeluqueria\dao\VentaDAO.class
 com\idra\gestionpeluqueria\service\ProductoService.class
@@ -12,6 +13,7 @@ com\idra\gestionpeluqueria\model\Cliente.class
 com\idra\gestionpeluqueria\GestionPeluqueria.class
 com\idra\gestionpeluqueria\dao\ProductoDAO.class
 com\idra\gestionpeluqueria\view\panels\ProductoPanel$4.class
+com\idra\gestionpeluqueria\view\panels\GraphPanel.class
 com\idra\gestionpeluqueria\model\Producto.class
 com\idra\gestionpeluqueria\view\panels\ClientePanel$2.class
 com\idra\gestionpeluqueria\view\panels\ProductoPanel$1.class
@@ -21,12 +23,14 @@ com\idra\gestionpeluqueria\view\dialogs\VentaDialog$2.class
 com\idra\gestionpeluqueria\exception\ValidacionException.class
 com\idra\gestionpeluqueria\view\MainFrame$1.class
 com\idra\gestionpeluqueria\model\enums\FormaPago.class
+com\idra\gestionpeluqueria\view\panels\ProductoPanel$5.class
 com\idra\gestionpeluqueria\view\panels\DashboardPanel.class
 com\idra\gestionpeluqueria\view\MainFrame.class
 com\idra\gestionpeluqueria\view\dialogs\ProductoDialog.class
 com\idra\gestionpeluqueria\view\panels\ClientePanel$1.class
 com\idra\gestionpeluqueria\view\panels\VentaPanel.class
 com\idra\gestionpeluqueria\view\panels\ProductoPanel$2.class
+com\idra\gestionpeluqueria\view\panels\VentaPanel$3.class
 com\idra\gestionpeluqueria\dao\ClienteDAO.class
 com\idra\gestionpeluqueria\model\Venta.class
 com\idra\gestionpeluqueria\model\enums\TipoServicio.class

@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  * Panel para la gestion de clientes en el e-commerce.
@@ -33,10 +34,10 @@ public class ClientePanel extends JPanel {
         initializeUI();
     }
 
-    private void initializeUI() {
-        setLayout(new BorderLayout(10, 10));
-        setBackground(new Color(240, 240, 240));
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+  private void initializeUI() {
+    setLayout(new BorderLayout(10, 10));
+    setBackground(new Color(230, 240, 255)); // CELESTE CLARO EN LUGAR DE GRIS
+    setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Crear componentes
         createHeaderPanel();
@@ -49,7 +50,7 @@ public class ClientePanel extends JPanel {
 
     private void createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(240, 240, 240));
+    headerPanel.setBackground(new Color(230, 240, 255)); // CELESTE CLARO
 
         JLabel titleLabel = new JLabel("Gestión de Clientes");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -140,36 +141,66 @@ public class ClientePanel extends JPanel {
         return button;
     }
 
-    private void createTablePanel() {
-        // Modelo de tabla - AGREGAMOS EDAD Y ZONA
-        String[] columnNames = {"ID", "Nombre", "Apellido", "Teléfono", "Email", "Edad", "Zona", "Fecha Registro", "Activo"};
-        tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; 
+   private void createTablePanel() {
+    // Modelo de tabla
+    String[] columnNames = {"ID", "Nombre", "Apellido", "Teléfono", "Email", "Edad", "Ciudad", "Fecha Registro", "Activo"};
+    tableModel = new DefaultTableModel(columnNames, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; 
+        }
+    };
+
+    tablaClientes = new JTable(tableModel);
+    
+    // MEJORAS EN EL DISEÑO DE LA TABLA
+    tablaClientes.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+    tablaClientes.setRowHeight(35);
+    tablaClientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    
+    // HEADER MEJORADO
+    tablaClientes.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
+    tablaClientes.getTableHeader().setBackground(new Color(50, 50, 50));
+    tablaClientes.getTableHeader().setForeground(Color.WHITE);
+    tablaClientes.getTableHeader().setReorderingAllowed(false);
+    
+    // COLORES DE LA TABLA
+    tablaClientes.setBackground(new Color(250, 250, 250));
+    tablaClientes.setForeground(Color.BLACK);
+    tablaClientes.setGridColor(new Color(220, 220, 220));
+    tablaClientes.setSelectionBackground(new Color(70, 130, 180));
+    tablaClientes.setSelectionForeground(Color.WHITE);
+    tablaClientes.setFillsViewportHeight(true);
+
+    // RENDERER PERSONALIZADO PARA FORZAR COLOR NEGRO EN TODAS LAS CELDAS
+    tablaClientes.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            
+            // FORZAR COLOR NEGRO SI NO ESTÁ SELECCIONADO
+            if (!isSelected) {
+                c.setForeground(Color.BLACK);
+                c.setBackground(Color.WHITE);
+            } else {
+                c.setForeground(Color.WHITE);
+                c.setBackground(new Color(70, 130, 180));
             }
-        };
+            
+            return c;
+        }
+    });
 
-        tablaClientes = new JTable(tableModel);
-        tablaClientes.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        tablaClientes.setRowHeight(35);
-        tablaClientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tablaClientes.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-        tablaClientes.getTableHeader().setBackground(new Color(70, 130, 180));
-        tablaClientes.getTableHeader().setForeground(Color.WHITE);
-        tablaClientes.setGridColor(new Color(220, 220, 220));
+    JScrollPane scrollPane = new JScrollPane(tablaClientes);
+    scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+    scrollPane.getViewport().setBackground(new Color(250, 250, 250));
+    
+    // COLOR DE FONDO DEL PANEL PRINCIPAL
+    setBackground(new Color(230, 240, 255));
 
-        // Personalizar la tabla
-        tablaClientes.setShowGrid(true);
-        tablaClientes.setIntercellSpacing(new Dimension(1, 1));
-
-        JScrollPane scrollPane = new JScrollPane(tablaClientes);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
-        scrollPane.getViewport().setBackground(Color.WHITE);
-
-        add(scrollPane, BorderLayout.CENTER);
-    }
-
+    add(scrollPane, BorderLayout.CENTER);
+}
     private void abrirDialogoCliente(Object[] datosCliente) {
         Cliente cliente = null;
         String titulo = "Agregar Cliente";
