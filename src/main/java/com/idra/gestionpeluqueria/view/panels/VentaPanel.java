@@ -172,23 +172,15 @@ public class VentaPanel extends JPanel {
     tablaVentas.getTableHeader().setReorderingAllowed(false);
     
     // COLORES DE LA TABLA
-    tablaVentas.setBackground(new Color(250, 250, 250));
+    tablaVentas.setBackground(Color.WHITE);
     tablaVentas.setForeground(Color.BLACK);
     tablaVentas.setGridColor(new Color(220, 220, 220));
     tablaVentas.setSelectionBackground(new Color(70, 130, 180));
     tablaVentas.setSelectionForeground(Color.WHITE);
     tablaVentas.setFillsViewportHeight(true);
 
-    JScrollPane scrollPane = new JScrollPane(tablaVentas);
-    scrollPane.getViewport().setBackground(new Color(250, 250, 250));
-    
-    // COLOR DE FONDO DEL PANEL PRINCIPAL
-    setBackground(new Color(230, 240, 255));
-
-    add(scrollPane, BorderLayout.CENTER);
-    
-    // ⭐⭐ RENDERER DEBE IR AL FINAL - DESPUÉS DE QUE LA TABLA ESTÉ COMPLETAMENTE CREADA ⭐⭐
-    tablaVentas.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+    // ✅ RENDERER CORREGIDO - FORZAR COLOR NEGRO
+    DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
@@ -204,7 +196,17 @@ public class VentaPanel extends JPanel {
             
             return c;
         }
-    });
+    };
+    
+    // Aplicar el renderer a todas las columnas
+    for (int i = 0; i < tablaVentas.getColumnCount(); i++) {
+        tablaVentas.getColumnModel().getColumn(i).setCellRenderer(renderer);
+    }
+
+    JScrollPane scrollPane = new JScrollPane(tablaVentas);
+    scrollPane.getViewport().setBackground(Color.WHITE);
+    
+    add(scrollPane, BorderLayout.CENTER);
 }
 
     /**

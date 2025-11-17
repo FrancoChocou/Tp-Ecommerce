@@ -12,8 +12,10 @@ com\idra\gestionpeluqueria\controller\ClienteController.class
 com\idra\gestionpeluqueria\model\Cliente.class
 com\idra\gestionpeluqueria\GestionPeluqueria.class
 com\idra\gestionpeluqueria\dao\ProductoDAO.class
+com\idra\gestionpeluqueria\view\panels\GraphPanel$1.class
 com\idra\gestionpeluqueria\view\panels\ProductoPanel$4.class
 com\idra\gestionpeluqueria\view\panels\GraphPanel.class
+com\idra\gestionpeluqueria\view\panels\GraphPanel$3.class
 com\idra\gestionpeluqueria\model\Producto.class
 com\idra\gestionpeluqueria\view\panels\ClientePanel$2.class
 com\idra\gestionpeluqueria\view\panels\ProductoPanel$1.class
@@ -27,6 +29,8 @@ com\idra\gestionpeluqueria\view\panels\ProductoPanel$5.class
 com\idra\gestionpeluqueria\view\panels\DashboardPanel.class
 com\idra\gestionpeluqueria\view\MainFrame.class
 com\idra\gestionpeluqueria\view\dialogs\ProductoDialog.class
+com\idra\gestionpeluqueria\view\panels\GraphPanel$2.class
+com\idra\gestionpeluqueria\service\DataGeneratorService.class
 com\idra\gestionpeluqueria\view\panels\ClientePanel$1.class
 com\idra\gestionpeluqueria\view\panels\VentaPanel.class
 com\idra\gestionpeluqueria\view\panels\ProductoPanel$2.class

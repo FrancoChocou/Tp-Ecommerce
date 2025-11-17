@@ -102,9 +102,7 @@ public class Venta {
     /**
      * Calcula el total de la venta basado en cantidad y precio unitario.
      */
-    private void calculateTotal() {
-        this.total = this.cantidad * this.precioUnitario;
-    }
+    
     
     /**
      * Obtiene el día de la semana de la venta (para análisis estadístico).

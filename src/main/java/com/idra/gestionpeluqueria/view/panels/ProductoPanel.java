@@ -179,15 +179,15 @@ public class ProductoPanel extends JPanel {
     tablaProductos.getTableHeader().setReorderingAllowed(false);
 
     // COLORES DE LA TABLA - MEJOR CONTRASTE
-    tablaProductos.setBackground(new Color(250, 250, 250));
-    tablaProductos.setForeground(Color.BLACK); // ← TEXTO NEGRO
+    tablaProductos.setBackground(Color.WHITE);
+    tablaProductos.setForeground(Color.BLACK);
     tablaProductos.setGridColor(new Color(220, 220, 220));
     tablaProductos.setSelectionBackground(new Color(70, 130, 180));
     tablaProductos.setSelectionForeground(Color.WHITE);
     tablaProductos.setFillsViewportHeight(true);
 
-    // RENDERER PARA FORZAR COLOR NEGRO - CORREGIDO
-    tablaProductos.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+    // ✅ RENDERER PRINCIPAL CORREGIDO
+    DefaultTableCellRenderer mainRenderer = new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
@@ -203,7 +203,14 @@ public class ProductoPanel extends JPanel {
             
             return c;
         }
-    });
+    };
+
+    // Aplicar renderer principal a todas las columnas excepto stock y estado
+    for (int i = 0; i < tablaProductos.getColumnCount(); i++) {
+        if (i != 5 && i != 6) { // No aplicar a stock (5) y estado (6)
+            tablaProductos.getColumnModel().getColumn(i).setCellRenderer(mainRenderer);
+        }
+    }
 
     // Renderer para columna de stock (MEJORADO)
     tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
@@ -211,7 +218,8 @@ public class ProductoPanel extends JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (value != null && value instanceof Integer) {
+            
+            if (!isSelected && value != null && value instanceof Integer) {
                 int stock = (Integer) value;
                 if (stock == 0) {
                     c.setBackground(new Color(255, 220, 220)); // Rojo claro para stock 0
@@ -223,13 +231,11 @@ public class ProductoPanel extends JPanel {
                     c.setBackground(new Color(220, 255, 220)); // Verde para stock normal
                     c.setForeground(Color.BLACK);
                 }
-                
-                // Si está seleccionado, usar colores de selección
-                if (isSelected) {
-                    c.setBackground(table.getSelectionBackground());
-                    c.setForeground(table.getSelectionForeground());
-                }
+            } else if (isSelected) {
+                c.setBackground(table.getSelectionBackground());
+                c.setForeground(table.getSelectionForeground());
             }
+            
             setHorizontalAlignment(SwingConstants.CENTER);
             return c;
         }
@@ -241,7 +247,8 @@ public class ProductoPanel extends JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            if (value != null) {
+            
+            if (!isSelected && value != null) {
                 String estado = value.toString();
                 if (estado.equals("Activo")) {
                     c.setBackground(new Color(220, 255, 220));
@@ -250,20 +257,18 @@ public class ProductoPanel extends JPanel {
                     c.setBackground(new Color(255, 220, 220));
                     c.setForeground(new Color(128, 0, 0));
                 }
-                
-                // Si está seleccionado, usar colores de selección
-                if (isSelected) {
-                    c.setBackground(table.getSelectionBackground());
-                    c.setForeground(table.getSelectionForeground());
-                }
+            } else if (isSelected) {
+                c.setBackground(table.getSelectionBackground());
+                c.setForeground(table.getSelectionForeground());
             }
+            
             setHorizontalAlignment(SwingConstants.CENTER);
             return c;
         }
     });
 
     JScrollPane scrollPane = new JScrollPane(tablaProductos);
-    scrollPane.getViewport().setBackground(new Color(250, 250, 250));
+    scrollPane.getViewport().setBackground(Color.WHITE);
 
     add(scrollPane, BorderLayout.CENTER);
 }

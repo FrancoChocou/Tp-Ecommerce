@@ -150,26 +150,27 @@ public class ClienteDAOImpl implements ClienteDAO {
         }
     }
     
-    @Override
-    public void eliminar(int id) throws DAOException {
-        // En lugar de eliminar, marcamos como inactivo para mantener integridad referencial
-        String sql = "UPDATE clientes SET activo = false WHERE id = ?";
-        
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, id);
-            int affectedRows = stmt.executeUpdate();
-            
-            if (affectedRows == 0) {
-                throw new DAOException("Error al eliminar cliente, ninguna fila afectada.");
-            }
-            
-        } catch (SQLException e) {
-            throw new DAOException("Error al eliminar cliente con ID: " + id, e);
-        }
-    }
+   @Override
+public void eliminar(int id) throws DAOException {
+    // CAMBIO: Borrado físico en lugar de lógico
+    String sql = "DELETE FROM clientes WHERE id = ?";
     
+    try (Connection conn = getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setInt(1, id);
+        int affectedRows = stmt.executeUpdate();
+        
+        if (affectedRows == 0) {
+            throw new DAOException("Error al eliminar cliente, ninguna fila afectada.");
+        }
+        
+    } catch (SQLException e) {
+        throw new DAOException("Error al eliminar cliente con ID: " + id, e);
+    }
+}
+
+
     @Override
     public boolean existeTelefono(String telefono) throws DAOException {
         String sql = "SELECT COUNT(*) FROM clientes WHERE telefono = ? AND activo = true";

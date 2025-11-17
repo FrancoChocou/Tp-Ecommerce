@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
+
     private JPanel mainPanel;
     private CardLayout cardLayout;
 
@@ -17,10 +18,14 @@ public class MainFrame extends JFrame {
 
     // Barra de navegación - BOTONES CORREGIDOS
     private JButton btnDashboard, btnClientes, btnServicios, btnTurnos, btnGraficos, btnSalir;
-    
+
     public MainFrame() {
         initializeUI();
         setupEventListeners();
+    }
+
+    public void mostrarPanelGraficos() {
+        showPanel("GRAFICOS", btnGraficos);
     }
 
     private void initializeUI() {
@@ -31,7 +36,7 @@ public class MainFrame extends JFrame {
 
         // Configurar layout principal
         setLayout(new BorderLayout());
-        
+
         // Crear barra de navegación
         createNavigationBar();
 
@@ -61,83 +66,84 @@ public class MainFrame extends JFrame {
         btnDashboard.setForeground(Color.WHITE);
     }
 
-    private void createNavigationBar() { 
-    JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    navPanel.setBackground(new Color(50, 50, 50));
-    navPanel.setPreferredSize(new Dimension(getWidth(), 60));
-    navPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    private void createNavigationBar() {
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        navPanel.setBackground(new Color(50, 50, 50));
+        navPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        navPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-    // Botones SIN ÍCONOS y con texto negro
-    btnDashboard = createNavButton("Dashboard", new Color(70, 130, 180));
-    btnClientes = createNavButton("Clientes", new Color(39, 174, 96));
-    btnServicios = createNavButton("Productos", new Color(155, 89, 182));
-    btnTurnos = createNavButton("Turnos", new Color(241, 196, 15));
-    btnGraficos = createNavButton("Gráficos", new Color(230, 126, 34));
-    btnSalir = createNavButton("Salir", new Color(231, 76, 60));
+        // Botones SIN ÍCONOS y con texto negro
+        btnDashboard = createNavButton("Dashboard", new Color(70, 130, 180));
+        btnClientes = createNavButton("Clientes", new Color(39, 174, 96));
+        btnServicios = createNavButton("Productos", new Color(155, 89, 182));
+        btnTurnos = createNavButton("Turnos", new Color(241, 196, 15));
+        btnGraficos = createNavButton("Gráficos", new Color(230, 126, 34));
+        btnSalir = createNavButton("Salir", new Color(231, 76, 60));
 
-    navPanel.add(btnDashboard);
-    navPanel.add(Box.createHorizontalStrut(10));
-    navPanel.add(btnClientes);
-    navPanel.add(Box.createHorizontalStrut(10));
-    navPanel.add(btnServicios);
-    navPanel.add(Box.createHorizontalStrut(10));
-    navPanel.add(btnTurnos);
-    navPanel.add(Box.createHorizontalStrut(10));
-    navPanel.add(btnGraficos);
-    navPanel.add(Box.createHorizontalStrut(50));
-    navPanel.add(btnSalir);
+        navPanel.add(btnDashboard);
+        navPanel.add(Box.createHorizontalStrut(10));
+        navPanel.add(btnClientes);
+        navPanel.add(Box.createHorizontalStrut(10));
+        navPanel.add(btnServicios);
+        navPanel.add(Box.createHorizontalStrut(10));
+        navPanel.add(btnTurnos);
+        navPanel.add(Box.createHorizontalStrut(10));
+        navPanel.add(btnGraficos);
+        navPanel.add(Box.createHorizontalStrut(50));
+        navPanel.add(btnSalir);
 
-    add(navPanel, BorderLayout.NORTH);
-}
+        add(navPanel, BorderLayout.NORTH);
+    }
 
     private JButton createNavButton(String text, Color color) {
-    JButton button = new JButton(text);
-    button.setFont(new Font("Segoe UI", Font.BOLD, 14));
-    button.setBackground(color);
-    button.setForeground(Color.BLACK); // CAMBIADO A NEGRO
-    button.setFocusPainted(false);
-    button.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(new Color(100, 100, 100)),
-        BorderFactory.createEmptyBorder(10, 20, 10, 20)
-    ));
-    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    button.setOpaque(true);
-    button.setContentAreaFilled(true);
-    button.setBorderPainted(true);
-    
-    // Efecto hover
-    button.addMouseListener(new java.awt.event.MouseAdapter() {
-        public void mouseEntered(java.awt.event.MouseEvent evt) {
-            if (!button.getBackground().equals(new Color(70, 130, 180))) {
-                Color hoverColor = color.brighter();
-                button.setBackground(hoverColor);
-                button.setForeground(Color.BLACK); // MANTENER NEGRO EN HOVER
-            }
-        }
-        
-        public void mouseExited(java.awt.event.MouseEvent evt) {
-            if (!button.getBackground().equals(new Color(70, 130, 180))) {
-                button.setBackground(color);
-                button.setForeground(Color.BLACK); // MANTENER NEGRO
-            }
-        }
-    });
+        JButton button = new JButton(text);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.setBackground(color);
+        button.setForeground(Color.BLACK); // CAMBIADO A NEGRO
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(100, 100, 100)),
+                BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+        button.setBorderPainted(true);
 
-    return button;
-}
+        // Efecto hover
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                if (!button.getBackground().equals(new Color(70, 130, 180))) {
+                    Color hoverColor = color.brighter();
+                    button.setBackground(hoverColor);
+                    button.setForeground(Color.BLACK); // MANTENER NEGRO EN HOVER
+                }
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (!button.getBackground().equals(new Color(70, 130, 180))) {
+                    button.setBackground(color);
+                    button.setForeground(Color.BLACK); // MANTENER NEGRO
+                }
+            }
+        });
+
+        return button;
+    }
+
     private void setupEventListeners() {
         btnDashboard.addActionListener(e -> showPanel("DASHBOARD", btnDashboard));
         btnClientes.addActionListener(e -> showPanel("CLIENTES", btnClientes));
         btnServicios.addActionListener(e -> showPanel("SERVICIOS", btnServicios));
         btnTurnos.addActionListener(e -> showPanel("TURNOS", btnTurnos));
         btnGraficos.addActionListener(e -> showPanel("GRAFICOS", btnGraficos));
-        
+
         btnSalir.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "¿Está seguro que desea salir del sistema?",
-                "Confirmar Salida",
-                JOptionPane.YES_NO_OPTION
+                    this,
+                    "¿Está seguro que desea salir del sistema?",
+                    "Confirmar Salida",
+                    JOptionPane.YES_NO_OPTION
             );
             if (confirm == JOptionPane.YES_OPTION) {
                 System.exit(0);
@@ -148,14 +154,14 @@ public class MainFrame extends JFrame {
     private void showPanel(String panelName, JButton activeButton) {
         // Resetear todos los botones
         resetNavButtons();
-        
+
         // Resaltar botón activo
         activeButton.setBackground(new Color(70, 130, 180));
         activeButton.setForeground(Color.WHITE);
-        
+
         // Mostrar panel
         cardLayout.show(mainPanel, panelName);
-        
+
         // Actualizar datos si es necesario
         updatePanelData(panelName);
     }
@@ -167,7 +173,7 @@ public class MainFrame extends JFrame {
         btnServicios.setBackground(new Color(155, 89, 182));
         btnTurnos.setBackground(new Color(241, 196, 15));
         btnGraficos.setBackground(new Color(230, 126, 34));
-        
+
         btnDashboard.setForeground(Color.WHITE);
         btnClientes.setForeground(Color.WHITE);
         btnServicios.setForeground(Color.WHITE);
@@ -199,7 +205,7 @@ public class MainFrame extends JFrame {
                 break;
             case "GRAFICOS":
                 if (graphPanel != null) {
-                    graphPanel.actualizarGraficos();
+                    graphPanel.actualizarGraficos();  // ← Esto debe llamarse aquí
                 }
                 break;
         }
