@@ -7,7 +7,6 @@ import com.idra.gestionpeluqueria.exception.ServiceException;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,7 @@ public class GraphPanel extends JPanel {
         buttonPanel.add(btnActualizar);
         add(buttonPanel, BorderLayout.SOUTH);
         
-        // Panel principal con scroll
+        // Panel principal 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -165,7 +164,7 @@ public class GraphPanel extends JPanel {
                     int textWidth = g2d.getFontMetrics().stringWidth(valueLabel);
                     g2d.drawString(valueLabel, x + barWidth/2 - textWidth/2, y - 5);
                     
-                    // Etiqueta de categoría (rotada si es necesario)
+                    // Etiqueta de categoría 
                     g2d.setFont(new Font("Segoe UI", Font.PLAIN, 10));
                     String shortLabel = categorias[i].length() > 8 ? categorias[i].substring(0, 8) + "..." : categorias[i];
                     int labelWidth = g2d.getFontMetrics().stringWidth(shortLabel);
@@ -277,12 +276,12 @@ public class GraphPanel extends JPanel {
                 
                 double total = 0;
                 for (double val : valores) total += val;
-                if (total == 0) total = 1; // Evitar división por cero
+                if (total == 0) total = 1; 
                 
                 int startAngle = 0;
                 for (int i = 0; i < valores.length; i++) {
                     int arcAngle = (int) (360 * valores[i] / total);
-                    if (arcAngle == 0 && valores[i] > 0) arcAngle = 1; // Mínimo 1 grado si hay valor
+                    if (arcAngle == 0 && valores[i] > 0) arcAngle = 1; 
                     
                     Color sliceColor = new Color(
                         (i * 50) % 255, 
@@ -418,7 +417,7 @@ public class GraphPanel extends JPanel {
             
             boolean hayDatos = false;
             
-            // Gráfico de ventas por categoría (SOLO SI HAY DATOS)
+            // Gráfico de ventas por categoría
             if (!ventasPorCategoria.isEmpty()) {
                 hayDatos = true;
                 String[] categorias = new String[ventasPorCategoria.size()];
@@ -426,13 +425,13 @@ public class GraphPanel extends JPanel {
                 
                 for (int i = 0; i < ventasPorCategoria.size(); i++) {
                     Object[] fila = ventasPorCategoria.get(i);
-                    categorias[i] = truncarTexto(fila[0].toString(), 15); // nombre categoría
-                    ventasCat[i] = ((Number) fila[1]).doubleValue(); // total ventas
+                    categorias[i] = truncarTexto(fila[0].toString(), 15); 
+                    ventasCat[i] = ((Number) fila[1]).doubleValue(); 
                 }
                 crearGraficoBarras("Ventas de Productos por Categoría - En barras horizontales ", categorias, ventasCat);
             }
             
-            // Gráfico de métodos de pago (SOLO SI HAY DATOS)
+            // Gráfico de métodos de pago 
             if (!ventasPorMetodoPago.isEmpty()) {
                 hayDatos = true;
                 String[] metodos = new String[ventasPorMetodoPago.size()];
@@ -440,13 +439,13 @@ public class GraphPanel extends JPanel {
                 
                 for (int i = 0; i < ventasPorMetodoPago.size(); i++) {
                     Object[] fila = ventasPorMetodoPago.get(i);
-                    metodos[i] = truncarTexto(fila[0].toString(), 15); // método pago
-                    usos[i] = ((Number) fila[2]).doubleValue(); // cantidad ventas
+                    metodos[i] = truncarTexto(fila[0].toString(), 15); 
+                    usos[i] = ((Number) fila[2]).doubleValue();
                 }
                 crearGraficoTorta("Métodos de Pago Utilizados - En grafico de torta ", metodos, usos);
             }
             
-            // Gráfico de productos más vendidos (SOLO SI HAY DATOS)
+            // Gráfico de productos más vendidos 
             if (!productosMasVendidos.isEmpty()) {
                 hayDatos = true;
                 String[] productos = new String[productosMasVendidos.size()];
@@ -454,13 +453,13 @@ public class GraphPanel extends JPanel {
                 
                 for (int i = 0; i < productosMasVendidos.size(); i++) {
                     Object[] fila = productosMasVendidos.get(i);
-                    productos[i] = truncarTexto(fila[0].toString(), 15); // nombre producto
-                    cantidades[i] = ((Number) fila[1]).doubleValue(); // unidades vendidas
+                    productos[i] = truncarTexto(fila[0].toString(), 15);
+                    cantidades[i] = ((Number) fila[1]).doubleValue(); 
                 }
                 crearGraficoBarras("Productos Más Vendidos - En barras horizontales ", productos, cantidades);
             }
             
-            // Gráfico de ventas por día de la semana (SOLO SI HAY DATOS)
+            // Gráfico de ventas por día de la semana 
             if (!ventasPorDia.isEmpty()) {
                 hayDatos = true;
                 String[] dias = {"Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"};
@@ -502,7 +501,7 @@ public class GraphPanel extends JPanel {
     }
     
     /**
-     * Obtiene ventas agrupadas por día de la semana (DATOS REALES)
+     * Obtiene ventas agrupadas por día de la semana 
      */
     private List<Object[]> obtenerVentasPorDiaDeSemana() throws ServiceException {
         // Usar el período de los últimos 30 días

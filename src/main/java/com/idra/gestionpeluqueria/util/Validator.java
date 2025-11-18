@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class Validator {
     
-    // Patrones de regex para validaciones
+    // Patrones para validaciones
     private static final Pattern EMAIL_PATTERN = 
         Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
     private static final Pattern PHONE_PATTERN = 
@@ -115,7 +115,7 @@ public class Validator {
     }
     
     /**
-     * Valida un DNI (ejemplo para Argentina)
+     * Valida un DNI 
      */
     public static boolean isValidDni(String dni) {
         if (dni == null || dni.trim().isEmpty()) {
@@ -126,7 +126,7 @@ public class Validator {
     }
     
     /**
-     * Valida que una fecha no sea en el pasado (para turnos)
+     * Valida que una fecha no sea en el pasado 
      */
     public static boolean isNotPastDate(java.time.LocalDateTime dateTime) {
         if (dateTime == null) return false;
@@ -134,7 +134,7 @@ public class Validator {
     }
     
     /**
-     * Valida la duración de un servicio (mínimo 15 minutos, máximo 480 - 8 horas)
+     * Valida la duración de un servicio 
      */
     public static boolean isValidServiceDuration(int minutes) {
         return minutes >= 15 && minutes <= 480;

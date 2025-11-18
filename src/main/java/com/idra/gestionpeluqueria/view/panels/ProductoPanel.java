@@ -6,7 +6,6 @@ import java.util.List;
 import com.idra.gestionpeluqueria.model.Producto;
 import com.idra.gestionpeluqueria.view.dialogs.ProductoDialog;
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -37,18 +36,18 @@ public class ProductoPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout(10, 10));
-        setBackground(new Color(230, 240, 255)); // CAMBIADO A CELESTE CLARO
+        setBackground(new Color(230, 240, 255)); 
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         createHeaderPanel();
         createTablePanel();
         createToolbar();
-        actualizarTabla(); // Cargar datos al inicializar
+        actualizarTabla(); 
     }
 
     private void createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(230, 240, 255)); // CAMBIADO A CELESTE CLARO
+        headerPanel.setBackground(new Color(230, 240, 255)); 
 
         JLabel titleLabel = new JLabel("Gestión de Productos");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -59,7 +58,7 @@ public class ProductoPanel extends JPanel {
         subtitleLabel.setForeground(new Color(100, 100, 100));
 
         JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(new Color(230, 240, 255)); // CAMBIADO A CELESTE CLARO
+        titlePanel.setBackground(new Color(230, 240, 255)); 
         titlePanel.add(titleLabel, BorderLayout.NORTH);
         titlePanel.add(subtitleLabel, BorderLayout.CENTER);
 
@@ -69,7 +68,7 @@ public class ProductoPanel extends JPanel {
 
     private void createToolbar() {
         JPanel toolbarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        toolbarPanel.setBackground(new Color(230, 240, 255)); // CAMBIADO A CELESTE CLARO
+        toolbarPanel.setBackground(new Color(230, 240, 255)); 
         toolbarPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
         btnAgregar = createToolbarButton("➕ Agregar Producto", new Color(39, 174, 96));
@@ -84,12 +83,12 @@ public class ProductoPanel extends JPanel {
 
         // Filtros
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        filterPanel.setBackground(new Color(230, 240, 255)); // CAMBIADO A CELESTE CLARO
+        filterPanel.setBackground(new Color(230, 240, 255)); 
 
         JLabel lblFiltro = new JLabel("Filtrar por categoría:");
         lblFiltro.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
-        // NUEVAS CATEGORÍAS DE ELECTRODOMÉSTICOS - ORDENADAS ALFABÉTICAMENTE
+        // Categorias de Electrodomesticos
         String[] categoriasElectrodomesticos = {
             "Todas", "Audio", "Barberia", "Bicicletas", "Camaras", "Celulares",
             "Cocinas", "Colchones", "Freezers", "Heladeras", "Impresoras",
@@ -102,7 +101,7 @@ public class ProductoPanel extends JPanel {
 
         // Búsqueda
         JPanel searchPanel = new JPanel(new BorderLayout(5, 0));
-        searchPanel.setBackground(new Color(230, 240, 255)); // CAMBIADO A CELESTE CLARO
+        searchPanel.setBackground(new Color(230, 240, 255));
 
         JLabel lblBuscar = new JLabel("Buscar:");
         lblBuscar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
@@ -167,18 +166,14 @@ public class ProductoPanel extends JPanel {
 
     tablaProductos = new JTable(tableModel);
 
-    // MEJORAS EN EL DISEÑO DE LA TABLA
+   
     tablaProductos.setFont(new Font("Segoe UI", Font.PLAIN, 12));
     tablaProductos.setRowHeight(35);
     tablaProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-    // HEADER MEJORADO - NEGRO CON TEXTO BLANCO
     tablaProductos.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
     tablaProductos.getTableHeader().setBackground(new Color(50, 50, 50));
     tablaProductos.getTableHeader().setForeground(Color.WHITE);
     tablaProductos.getTableHeader().setReorderingAllowed(false);
-
-    // COLORES DE LA TABLA - MEJOR CONTRASTE
     tablaProductos.setBackground(Color.WHITE);
     tablaProductos.setForeground(Color.BLACK);
     tablaProductos.setGridColor(new Color(220, 220, 220));
@@ -186,7 +181,7 @@ public class ProductoPanel extends JPanel {
     tablaProductos.setSelectionForeground(Color.WHITE);
     tablaProductos.setFillsViewportHeight(true);
 
-    // ✅ RENDERER PRINCIPAL CORREGIDO
+   
     DefaultTableCellRenderer mainRenderer = new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -205,14 +200,14 @@ public class ProductoPanel extends JPanel {
         }
     };
 
-    // Aplicar renderer principal a todas las columnas excepto stock y estado
+    // Aplicar renderer principal a todas las columnas 
     for (int i = 0; i < tablaProductos.getColumnCount(); i++) {
         if (i != 5 && i != 6) { // No aplicar a stock (5) y estado (6)
             tablaProductos.getColumnModel().getColumn(i).setCellRenderer(mainRenderer);
         }
     }
 
-    // Renderer para columna de stock (MEJORADO)
+    // Renderer para columna de stock 
     tablaProductos.getColumnModel().getColumn(5).setCellRenderer(new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -222,13 +217,13 @@ public class ProductoPanel extends JPanel {
             if (!isSelected && value != null && value instanceof Integer) {
                 int stock = (Integer) value;
                 if (stock == 0) {
-                    c.setBackground(new Color(255, 220, 220)); // Rojo claro para stock 0
+                    c.setBackground(new Color(255, 220, 220)); 
                     c.setForeground(Color.RED);
                 } else if (stock <= 5) {
-                    c.setBackground(new Color(255, 245, 200)); // Amarillo para stock bajo
+                    c.setBackground(new Color(255, 245, 200)); 
                     c.setForeground(Color.ORANGE);
                 } else {
-                    c.setBackground(new Color(220, 255, 220)); // Verde para stock normal
+                    c.setBackground(new Color(220, 255, 220)); 
                     c.setForeground(Color.BLACK);
                 }
             } else if (isSelected) {
@@ -241,7 +236,7 @@ public class ProductoPanel extends JPanel {
         }
     });
 
-    // Renderer para columna de estado (MEJORADO)
+    // Renderer para columna de estado 
     tablaProductos.getColumnModel().getColumn(6).setCellRenderer(new DefaultTableCellRenderer() {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -398,8 +393,7 @@ public class ProductoPanel extends JPanel {
             return;
         }
 
-        // Por simplicidad, filtramos localmente
-        // En una implementación real, se haría una consulta a la base de datos
+        
         try {
             tableModel.setRowCount(0);
             List<Producto> productos = productoController.listarTodos();
@@ -437,7 +431,7 @@ public class ProductoPanel extends JPanel {
 
         try {
             tableModel.setRowCount(0);
-            // USANDO MÉTODO CORREGIDO
+           
             List<Producto> productos = productoController.buscarPorNombre(textoBusqueda);
 
             for (Producto producto : productos) {
@@ -468,7 +462,7 @@ public class ProductoPanel extends JPanel {
     public void actualizarTabla() {
         try {
             tableModel.setRowCount(0);
-            // USANDO MÉTODO CORREGIDO
+           
             List<Producto> productos = productoController.listarTodos();
 
             for (Producto producto : productos) {
@@ -492,9 +486,8 @@ public class ProductoPanel extends JPanel {
         }
     }
 
-    // MÉTODOS AUXILIARES ACTUALIZADOS PARA LAS NUEVAS CATEGORÍAS
+    
     private String obtenerNombreCategoriaPorId(int idCategoria) {
-        // NUEVAS CATEGORÍAS DE ELECTRODOMÉSTICOS
         String[] categorias = {
             "", "Audio", "Barberia", "Bicicletas", "Camaras", "Celulares",
             "Cocinas", "Colchones", "Freezers", "Heladeras", "Impresoras",
@@ -505,7 +498,6 @@ public class ProductoPanel extends JPanel {
     }
 
     private int obtenerIdCategoriaPorNombre(String nombreCategoria) {
-        // NUEVAS CATEGORÍAS DE ELECTRODOMÉSTICOS
         String[] categorias = {
             "", "Audio", "Barberia", "Bicicletas", "Camaras", "Celulares",
             "Cocinas", "Colchones", "Freezers", "Heladeras", "Impresoras",
@@ -517,6 +509,6 @@ public class ProductoPanel extends JPanel {
                 return i;
             }
         }
-        return 1; // Default a Audio
+        return 1; 
     }
 }

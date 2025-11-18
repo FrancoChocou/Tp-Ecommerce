@@ -197,7 +197,7 @@ public class ProductoDialog extends JDialog {
             "Error", 
             JOptionPane.ERROR_MESSAGE);
     }
-} // ← Esta llave cierra el método guardarProducto()
+} 
 
     private boolean validarCampos() {
         if (txtNombre.getText().trim().isEmpty()) {

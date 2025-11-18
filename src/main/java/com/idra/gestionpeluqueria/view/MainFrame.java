@@ -14,9 +14,9 @@ public class MainFrame extends JFrame {
     private ClientePanel clientePanel;
     private ProductoPanel servicioPanel;
     private VentaPanel turnoPanel;
-    private GraphPanel graphPanel; // ← NUEVO PANEL
+    private GraphPanel graphPanel;
 
-    // Barra de navegación - BOTONES CORREGIDOS
+    // Barra de navegación 
     private JButton btnDashboard, btnClientes, btnServicios, btnTurnos, btnGraficos, btnSalir;
 
     public MainFrame() {
@@ -49,14 +49,13 @@ public class MainFrame extends JFrame {
         clientePanel = new ClientePanel();
         servicioPanel = new ProductoPanel();
         turnoPanel = new VentaPanel();
-        graphPanel = new GraphPanel(); // ← NUEVO PANEL
+        graphPanel = new GraphPanel();
 
-        // Agregar paneles al CardLayout
         mainPanel.add(dashboardPanel, "DASHBOARD");
         mainPanel.add(clientePanel, "CLIENTES");
         mainPanel.add(servicioPanel, "SERVICIOS");
         mainPanel.add(turnoPanel, "TURNOS");
-        mainPanel.add(graphPanel, "GRAFICOS"); // ← NUEVO PANEL
+        mainPanel.add(graphPanel, "GRAFICOS"); 
 
         add(mainPanel, BorderLayout.CENTER);
 
@@ -72,7 +71,6 @@ public class MainFrame extends JFrame {
         navPanel.setPreferredSize(new Dimension(getWidth(), 60));
         navPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        // Botones SIN ÍCONOS y con texto negro
         btnDashboard = createNavButton("Dashboard", new Color(70, 130, 180));
         btnClientes = createNavButton("Clientes", new Color(39, 174, 96));
         btnServicios = createNavButton("Productos", new Color(155, 89, 182));
@@ -99,7 +97,7 @@ public class MainFrame extends JFrame {
         JButton button = new JButton(text);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.setBackground(color);
-        button.setForeground(Color.BLACK); // CAMBIADO A NEGRO
+        button.setForeground(Color.BLACK); 
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(new Color(100, 100, 100)),
@@ -116,14 +114,14 @@ public class MainFrame extends JFrame {
                 if (!button.getBackground().equals(new Color(70, 130, 180))) {
                     Color hoverColor = color.brighter();
                     button.setBackground(hoverColor);
-                    button.setForeground(Color.BLACK); // MANTENER NEGRO EN HOVER
+                    button.setForeground(Color.BLACK); 
                 }
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 if (!button.getBackground().equals(new Color(70, 130, 180))) {
                     button.setBackground(color);
-                    button.setForeground(Color.BLACK); // MANTENER NEGRO
+                    button.setForeground(Color.BLACK);  
                 }
             }
         });
@@ -205,7 +203,7 @@ public class MainFrame extends JFrame {
                 break;
             case "GRAFICOS":
                 if (graphPanel != null) {
-                    graphPanel.actualizarGraficos();  // ← Esto debe llamarse aquí
+                    graphPanel.actualizarGraficos();  
                 }
                 break;
         }

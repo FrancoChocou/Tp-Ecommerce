@@ -26,7 +26,7 @@ public class VentaController {
         this.ventaService = new VentaServiceImpl(new VentaDAOImpl());
     }
     
-    // ==================== MÉTODOS CRUD BÁSICOS ====================
+    //Metodos CRUD basicos
     
     /**
      * Crea una nueva venta en el sistema
@@ -124,7 +124,7 @@ public class VentaController {
         return ventaService.validarVenta(venta);
     }
     
-    // ==================== MÉTODOS DE ANÁLISIS ESTADÍSTICO ====================
+    // Metodos de analisis estadistico 
     
     /**
      * Calcula el promedio de ventas diarias para un período específico

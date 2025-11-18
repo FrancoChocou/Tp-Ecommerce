@@ -7,8 +7,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import com.idra.gestionpeluqueria.exception.ServiceException;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -37,7 +35,7 @@ public class ClientePanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout(10, 10));
-        setBackground(new Color(230, 240, 255)); // CELESTE CLARO EN LUGAR DE GRIS
+        setBackground(new Color(230, 240, 255));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Crear componentes
@@ -51,7 +49,7 @@ public class ClientePanel extends JPanel {
 
     private void createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(230, 240, 255)); // CELESTE CLARO
+        headerPanel.setBackground(new Color(230, 240, 255));
 
         JLabel titleLabel = new JLabel("Gestión de Clientes");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
@@ -154,18 +152,15 @@ public class ClientePanel extends JPanel {
 
         tablaClientes = new JTable(tableModel);
 
-        // MEJORAS EN EL DISEÑO DE LA TABLA
         tablaClientes.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tablaClientes.setRowHeight(35);
         tablaClientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // HEADER MEJORADO
         tablaClientes.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
         tablaClientes.getTableHeader().setBackground(new Color(50, 50, 50));
         tablaClientes.getTableHeader().setForeground(Color.WHITE);
         tablaClientes.getTableHeader().setReorderingAllowed(false);
 
-        // COLORES DE LA TABLA
         tablaClientes.setBackground(Color.WHITE);
         tablaClientes.setForeground(Color.BLACK);
         tablaClientes.setGridColor(new Color(220, 220, 220));
@@ -173,7 +168,6 @@ public class ClientePanel extends JPanel {
         tablaClientes.setSelectionForeground(Color.WHITE);
         tablaClientes.setFillsViewportHeight(true);
 
-        // ✅ RENDERER CORREGIDO - FORZAR COLOR NEGRO
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
@@ -192,7 +186,7 @@ public class ClientePanel extends JPanel {
             }
         };
 
-        // Aplicar el renderer a todas las columnas
+        
         for (int i = 0; i < tablaClientes.getColumnCount(); i++) {
             tablaClientes.getColumnModel().getColumn(i).setCellRenderer(renderer);
         }
@@ -209,7 +203,7 @@ public class ClientePanel extends JPanel {
         String titulo = "Agregar Cliente";
 
         if (datosCliente != null) {
-            // Crear cliente desde datos de la tabla
+            
             cliente = new Cliente();
             cliente.setId((Integer) datosCliente[0]);
             cliente.setNombre(datosCliente[1].toString());
@@ -232,7 +226,7 @@ public class ClientePanel extends JPanel {
         dialog.setVisible(true);
 
         if (dialog.isGuardadoExitoso()) {
-            actualizarTabla(); // Refrescar la tabla
+            actualizarTabla(); 
         }
     }
 
@@ -306,7 +300,7 @@ public class ClientePanel extends JPanel {
         }
 
         try {
-            // Usar el método corregido del controller
+            
             List<Cliente> clientesEncontrados = clienteController.buscarPorNombre(textoBusqueda);
 
             // Limpiar tabla y mostrar resultados
@@ -349,9 +343,9 @@ public class ClientePanel extends JPanel {
      */
     public void actualizarTabla() {
         try {
-            tableModel.setRowCount(0); // Limpiar tabla
+            tableModel.setRowCount(0); 
 
-            // Obtener clientes reales de la base de datos - USANDO MÉTODO CORREGIDO
+            // Obtener clientes reales de la base de datos 
             List<Cliente> clientes = clienteController.listarTodos();
 
             // Llenar la tabla con datos reales

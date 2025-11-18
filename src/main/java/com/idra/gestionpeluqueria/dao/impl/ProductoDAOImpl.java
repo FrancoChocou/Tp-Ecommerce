@@ -222,7 +222,7 @@ public class ProductoDAOImpl implements ProductoDAO {
 
     @Override
 public void eliminar(int id) throws DAOException {
-    // CAMBIO: Borrado físico en lugar de lógico
+    
     String sql = "DELETE FROM productos WHERE id = ?";
     
     try (Connection conn = getConnection();

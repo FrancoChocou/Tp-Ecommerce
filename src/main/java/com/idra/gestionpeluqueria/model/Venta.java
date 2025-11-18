@@ -60,7 +60,7 @@ public class Venta {
         this.total = cantidad * precioUnitario;
         this.fecha = LocalDateTime.now();
         
-        // Crear objetos básicos (en una implementación real se cargarían desde BD)
+        // Crear objetos básicos 
         this.cliente = new Cliente();
         this.cliente.setId(idCliente);
         
@@ -84,13 +84,13 @@ public class Venta {
     public int getCantidad() { return cantidad; }
     public void setCantidad(int cantidad) { 
         this.cantidad = cantidad;
-        calcularTotal(); // Recalcular total cuando cambia la cantidad
+        calcularTotal(); 
     }
     
     public double getPrecioUnitario() { return precioUnitario; }
     public void setPrecioUnitario(double precioUnitario) { 
         this.precioUnitario = precioUnitario;
-        calcularTotal(); // Recalcular total cuando cambia el precio
+        calcularTotal(); 
     }
     
     public int getIdMetodoPago() { return idMetodoPago; }
@@ -105,7 +105,7 @@ public class Venta {
     
     
     /**
-     * Obtiene el día de la semana de la venta (para análisis estadístico).
+     * Obtiene el día de la semana de la venta 
      * 
      * @return Nombre del día de la semana (Lunes, Martes, etc.)
      */
@@ -114,7 +114,7 @@ public class Venta {
     }
     
     /**
-     * Obtiene el mes de la venta (para análisis estadístico).
+     * Obtiene el mes de la venta 
      * 
      * @return Número del mes (1-12)
      */

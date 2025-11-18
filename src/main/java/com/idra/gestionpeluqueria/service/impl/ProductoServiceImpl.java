@@ -162,10 +162,7 @@ public class ProductoServiceImpl implements ProductoService {
         if (producto.getPrecioUnitario() <= 0) return false;
         if (producto.getStock() < 0) return false;
         if (producto.getIdCategoria() <= 0) return false;
-        
-        // Validación de descripción opcional pero recomendada
         if (producto.getDescripcion() == null || producto.getDescripcion().trim().isEmpty()) {
-            // Podría ser una advertencia en lugar de un error
             System.out.println("Advertencia: Producto sin descripción");
         }
         

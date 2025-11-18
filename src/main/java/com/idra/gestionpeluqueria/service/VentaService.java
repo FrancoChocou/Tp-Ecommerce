@@ -99,7 +99,7 @@ public interface VentaService {
      */
     boolean validarVenta(Venta venta) throws ServiceException;
     
-    // ==================== MÉTODOS DE ANÁLISIS ESTADÍSTICO ====================
+    //Metodos de analisis estadistico 
     
     /**
      * Calcula el promedio de ventas diarias para un período específico.

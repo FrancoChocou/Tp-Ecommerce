@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+
 
 /**
  * Panel principal (dashboard) de la aplicacion de e-commerce Muestra
@@ -53,7 +53,7 @@ public class DashboardPanel extends JPanel {
         // Panel de acciones rápidas
         createQuickActionsPanel();
 
-        // Layout principal - SOLO ESTADÍSTICAS BÁSICAS
+        // Layout principal 
         JPanel contentPanel = new JPanel(new BorderLayout(0, 20));
         contentPanel.setBackground(new Color(230, 240, 255));
 
@@ -165,12 +165,12 @@ public class DashboardPanel extends JPanel {
         quickActionsPanel.add(btnNuevaVenta);
         quickActionsPanel.add(btnVerReportes);
         quickActionsPanel.add(btnGenerarDatos);
-        quickActionsPanel.add(btnLimpiarDatos); // NUEVO BOTÓN
+        quickActionsPanel.add(btnLimpiarDatos); 
         quickActionsPanel.add(btnActualizar);
 
         // Event listeners
         btnNuevaVenta.addActionListener(e -> {
-            // Abrir diálogo REAL de nueva venta
+            
             Window parentWindow = SwingUtilities.getWindowAncestor(DashboardPanel.this);
             JFrame parentFrame = null;
             if (parentWindow instanceof JFrame) {
@@ -181,7 +181,7 @@ public class DashboardPanel extends JPanel {
             dialog.setVisible(true);
 
             if (dialog.isGuardadoExitoso()) {
-                actualizarDatos(); // Refrescar dashboard
+                actualizarDatos(); 
                 JOptionPane.showMessageDialog(DashboardPanel.this,
                         "Venta registrada exitosamente!",
                         "Éxito",
@@ -329,7 +329,7 @@ public class DashboardPanel extends JPanel {
                     generator.generarDatosPrueba();
 
                     SwingUtilities.invokeLater(() -> {
-                        actualizarDatos(); // Actualizar estadísticas
+                        actualizarDatos(); 
                         JOptionPane.showMessageDialog(this,
                                 "✅ Datos de prueba generados exitosamente!\n\n"
                                 + "• 20 clientes creados\n"

@@ -7,7 +7,6 @@ import com.idra.gestionpeluqueria.config.DatabaseConfig;
 import com.idra.gestionpeluqueria.exception.DAOException;
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import com.idra.gestionpeluqueria.dao.VentaDAO;

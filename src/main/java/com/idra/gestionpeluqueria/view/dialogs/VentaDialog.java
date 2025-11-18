@@ -180,7 +180,7 @@ public class VentaDialog extends JDialog {
 
     private void cargarCombos() {
         try {
-            // Cargar clientes - USANDO MÉTODO CORREGIDO
+            // Cargar clientes 
             List<Cliente> clientes = clienteController.listarTodos();
             comboCliente.removeAllItems();
             for (Cliente cliente : clientes) {
@@ -221,7 +221,7 @@ public class VentaDialog extends JDialog {
             txtPrecioUnitario.setText(String.valueOf(ventaEditar.getPrecioUnitario()));
             txtTotal.setText(String.valueOf(ventaEditar.getTotal()));
             
-            // Método de pago (simulado)
+            // Método de pago 
             String[] metodos = {"Tarjeta Crédito", "Tarjeta Débito", "Efectivo", "Transferencia", "Mercado Pago"};
             if (ventaEditar.getIdMetodoPago() > 0 && ventaEditar.getIdMetodoPago() <= metodos.length) {
                 comboMetodoPago.setSelectedItem(metodos[ventaEditar.getIdMetodoPago() - 1]);
@@ -233,7 +233,7 @@ public class VentaDialog extends JDialog {
         String nombre = JOptionPane.showInputDialog(this, "Buscar cliente por nombre:");
         if (nombre != null && !nombre.trim().isEmpty()) {
             try {
-                // USANDO MÉTODO CORREGIDO
+                
                 List<Cliente> clientes = clienteController.buscarPorNombre(nombre.trim());
                 if (clientes.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "No se encontraron clientes", "Búsqueda", JOptionPane.INFORMATION_MESSAGE);

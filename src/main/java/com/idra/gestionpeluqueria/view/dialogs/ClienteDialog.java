@@ -7,8 +7,7 @@ import com.idra.gestionpeluqueria.util.Validator;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 
 /**
  * Dialogo para crear y editar clientes.
@@ -45,7 +44,7 @@ public class ClienteDialog extends JDialog {
     }
 
     private void initializeUI() {
-        setSize(450, 400); // Aumenté el tamaño para los nuevos campos
+        setSize(450, 400); 
         setLocationRelativeTo(getParent());
         setResizable(false);
         setLayout(new BorderLayout(10, 10));
@@ -102,16 +101,16 @@ public class ClienteDialog extends JDialog {
         txtEmail = new JTextField(20);
         formPanel.add(txtEmail, gbc);
         
-        // Edad - NUEVO CAMPO
+        // Edad 
         gbc.gridx = 0; gbc.gridy = 4;
         formPanel.add(new JLabel("Edad:"), gbc);
         gbc.gridx = 1;
         txtEdad = new JTextField(20);
         formPanel.add(txtEdad, gbc);
         
-        // Zona - NUEVO CAMPO
+        // Zona 
        gbc.gridx = 0; gbc.gridy = 5;
-formPanel.add(new JLabel("Ciudad:"), gbc); // ← CAMBIADO DEFINITIVAMENTE
+formPanel.add(new JLabel("Ciudad:"), gbc); 
 gbc.gridx = 1;
 txtZona = new JTextField(20);
 txtZona.setToolTipText("Ingrese la ciudad del cliente (solo letras y números)");
@@ -266,7 +265,7 @@ formPanel.add(txtZona, gbc);
         return false;
     }
     
-    // VALIDACIÓN MODIFICADA PARA CIUDAD - SOLO LETRAS Y NÚMEROS
+    // Validacion para ciudad
     String ciudad = txtZona.getText().trim();
     if (ciudad.isEmpty()) {
         mostrarError("La ciudad es obligatoria");
@@ -274,7 +273,7 @@ formPanel.add(txtZona, gbc);
         return false;
     }
     
-    // SOLO PERMITIR LETRAS, NÚMEROS Y ESPACIOS
+  
     if (!ciudad.matches("^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\\s]+$")) {
         mostrarError("La ciudad solo puede contener letras, números y espacios");
         txtZona.requestFocus();

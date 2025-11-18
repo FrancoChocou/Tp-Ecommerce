@@ -51,10 +51,8 @@ public class VentaServiceImpl implements VentaService {
                 throw new ServiceException("Stock insuficiente. Disponible: " + producto.getStock());
             }
             
-            // Crear venta
             ventaDAO.crear(venta);
             
-            // Actualizar stock
             productoService.reducirStockProducto(venta.getProducto().getId(), venta.getCantidad());
             
         } catch (DAOException | ServiceException e) {
@@ -150,7 +148,7 @@ public class VentaServiceImpl implements VentaService {
         return true;
     }
     
-    // ==================== IMPLEMENTACIÓN MÉTODOS ESTADÍSTICOS ====================
+    // Implementacion de estadistica
     
     @Override
     public double calcularPromedioVentasDiarias(LocalDate fechaInicio, LocalDate fechaFin) throws ServiceException {
@@ -249,8 +247,8 @@ public class VentaServiceImpl implements VentaService {
             int n = ventas.size();
             
             for (Venta venta : ventas) {
-                double x = venta.getFecha().getDayOfWeek().getValue(); // Día de semana (1=Lunes, 7=Domingo)
-                double y = venta.getCantidad();                        // Cantidad
+                double x = venta.getFecha().getDayOfWeek().getValue(); 
+                double y = venta.getCantidad();                        
                 
                 sumXY += x * y;
                 sumX += x;

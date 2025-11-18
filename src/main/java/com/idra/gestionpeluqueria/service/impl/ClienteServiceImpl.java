@@ -100,12 +100,8 @@ public class ClienteServiceImpl implements ClienteService {
         if (cliente.getApellido() == null || cliente.getApellido().trim().isEmpty()) return false;
         if (cliente.getTelefono() == null || cliente.getTelefono().trim().isEmpty()) return false;
         if (cliente.getEmail() == null || cliente.getEmail().trim().isEmpty()) return false;
-        
-        // Validaciones para e-commerce (nuevas)
         if (cliente.getEdad() < 0 || cliente.getEdad() > 120) return false;
         if (cliente.getIdZona() <= 0) return false;
-        
-        // Validación básica de email
         if (!cliente.getEmail().contains("@")) return false;
         
         return true;

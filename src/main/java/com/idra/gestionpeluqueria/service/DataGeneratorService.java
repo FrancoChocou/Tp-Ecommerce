@@ -17,7 +17,7 @@ import java.util.*;
 /**
  * Servicio para generar datos de prueba realistas para análisis estadísticos
  * Genera clientes, productos y ventas con distribución balanceada
- * VERSIÓN MEJORADA - Con verificación de datos de referencia
+ * Con verificación de datos de referencia
  */
 public class DataGeneratorService {
     
@@ -26,7 +26,7 @@ public class DataGeneratorService {
     private VentaDAO ventaDAO;
     private Random random;
     
-    // Arrays de datos realistas para Argentina
+    // Arrays de datos realistas 
     private final String[] NOMBRES = {"Juan", "María", "Carlos", "Ana", "Luis", "Laura", "Diego", "Sofía", "José", "Marta", 
                                      "Miguel", "Elena", "Jorge", "Claudia", "Ricardo", "Patricia", "Fernando", "Lucía", 
                                      "Roberto", "Andrea", "Daniel", "Silvia", "Pablo", "Carolina", "Héctor", "Gabriela"};
@@ -64,13 +64,13 @@ public class DataGeneratorService {
     
     /**
      * Genera datos de prueba balanceados para análisis estadístico
-     * VERSIÓN MEJORADA - Con verificación previa
+     * Con verificación previa
      */
     public void generarDatosPrueba() {
         try {
             System.out.println("Iniciando generación de datos de prueba...");
             
-            // VERIFICAR que existen datos de referencia
+            
             if (!verificarDatosReferencia()) {
                 System.err.println("❌ ERROR: No hay datos de referencia (categorías, zonas, métodos de pago)");
                 System.err.println("💡 Ejecuta el script SQL mejorado primero");
@@ -102,7 +102,7 @@ public class DataGeneratorService {
     }
     
     /**
-     * VERIFICA que existen datos en las tablas de referencia
+     * Verifica que existen datos en las tablas de referencia
      */
     private boolean verificarDatosReferencia() throws DAOException {
         try {
@@ -130,7 +130,7 @@ public class DataGeneratorService {
      */
     private boolean verificarTablaReferencia(String tabla) {
         try {
-            // Consulta simple para verificar que la tabla tiene datos
+            
             java.sql.Connection conn = com.idra.gestionpeluqueria.config.DatabaseConfig.getInstance().getConnection();
             String sql = "SELECT COUNT(*) as count FROM " + tabla;
             try (java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
@@ -159,9 +159,9 @@ public class DataGeneratorService {
             cliente.setApellido(APELLIDOS[random.nextInt(APELLIDOS.length)]);
             cliente.setTelefono(generarTelefono());
             cliente.setEmail(generarEmail(cliente.getNombre(), cliente.getApellido()));
-            cliente.setEdad(18 + random.nextInt(47)); // 18-65 años
+            cliente.setEdad(18 + random.nextInt(47)); 
             
-            // ID de zona entre 1-10 (según el script SQL mejorado)
+            
             cliente.setIdZona(random.nextInt(10) + 1);
             cliente.setFechaRegistro(LocalDate.now().minusDays(random.nextInt(365))); // Registrados en el último año
             cliente.setActivo(true);
@@ -185,11 +185,11 @@ public class DataGeneratorService {
                 Producto producto = new Producto();
                 producto.setNombre(PRODUCTOS_POR_CATEGORIA[catIndex][i % PRODUCTOS_POR_CATEGORIA[catIndex].length]);
                 producto.setDescripcion("Descripción de " + producto.getNombre());
-                producto.setIdCategoria(catIndex + 1); // IDs 1-5
+                producto.setIdCategoria(catIndex + 1); 
                 producto.setPrecioUnitario(PRECIOS_POR_CATEGORIA[catIndex][i % PRECIOS_POR_CATEGORIA[catIndex].length]);
-                producto.setStock(50 + random.nextInt(100)); // Stock entre 50-150
+                producto.setStock(50 + random.nextInt(100)); 
                 producto.setActivo(true);
-                producto.setFechaCreacion(LocalDate.now().minusDays(random.nextInt(180))); // Creados en los últimos 6 meses
+                producto.setFechaCreacion(LocalDate.now().minusDays(random.nextInt(180))); 
                 
                 productoDAO.crear(producto);
                 productos.add(producto);
@@ -220,12 +220,12 @@ public class DataGeneratorService {
         }
         
         // Patrón 2: Más ventas los viernes y sábados (correlación positiva con fin de semana)
-        tendenciaDiaSemana.put(1, 0.7); // Lunes - menos ventas
+        tendenciaDiaSemana.put(1, 0.7); // Lunes 
         tendenciaDiaSemana.put(2, 0.8); // Martes
         tendenciaDiaSemana.put(3, 0.9); // Miércoles  
         tendenciaDiaSemana.put(4, 1.0); // Jueves
-        tendenciaDiaSemana.put(5, 1.5); // Viernes - más ventas
-        tendenciaDiaSemana.put(6, 1.8); // Sábado - muchas más ventas
+        tendenciaDiaSemana.put(5, 1.5); // Viernes 
+        tendenciaDiaSemana.put(6, 1.8); // Sábado 
         tendenciaDiaSemana.put(7, 1.2); // Domingo
 
         for (int i = 0; i < cantidad; i++) {
@@ -252,7 +252,7 @@ public class DataGeneratorService {
             double variacionPrecio = 0.9 + (random.nextDouble() * 0.2); // ±10% variación
             venta.setPrecioUnitario(producto.getPrecioUnitario() * variacionPrecio);
             
-            // Método de pago aleatorio (1-5 según el script SQL mejorado)
+            // Método de pago aleatorio
             venta.setIdMetodoPago(1 + random.nextInt(5));
             
             // Total calculado
@@ -263,7 +263,7 @@ public class DataGeneratorService {
     }
     
     /**
-     * Genera fechas con patrones específicos (más ventas fines de semana)
+     * Genera fechas con patrones específicos 
      */
     private LocalDateTime generarFechaConPatron(LocalDate fechaInicio, Map<Integer, Double> tendenciaDiaSemana) {
         int diasDesdeInicio;
@@ -272,25 +272,25 @@ public class DataGeneratorService {
         double probabilidad = random.nextDouble();
         
         if (probabilidad < 0.3) {
-            // 30% de ventas sean recientes
+            
             diasDesdeInicio = (int) (fechaInicio.until(LocalDate.now()).getDays()) - random.nextInt(7);
         } else if (probabilidad < 0.8) {
-            // 50% seguir patrón de días de semana
+            
             List<Integer> dias = new ArrayList<>(tendenciaDiaSemana.keySet());
             List<Double> probabilidades = new ArrayList<>(tendenciaDiaSemana.values());
             int diaSeleccionado = seleccionarPorProbabilidad(dias, probabilidades);
             diasDesdeInicio = encontrarDiaEnPeriodo(fechaInicio, diaSeleccionado);
         } else {
-            // 20% completamente aleatorio
+            
             int totalDias = (int) (fechaInicio.until(LocalDate.now()).getDays()) + 1;
             diasDesdeInicio = random.nextInt(totalDias);
         }
         
         fecha = fechaInicio.plusDays(Math.max(0, diasDesdeInicio));
         
-        // Hora del día (más ventas en la tarde)
-        int hora = 9 + random.nextInt(10); // 9-18hs
-        if (random.nextDouble() > 0.7) hora = 18 + random.nextInt(4); // Algunas ventas en la noche
+        
+        int hora = 9 + random.nextInt(10); 
+        if (random.nextDouble() > 0.7) hora = 18 + random.nextInt(4);
         
         return fecha.atTime(hora, random.nextInt(60));
     }
@@ -321,7 +321,7 @@ public class DataGeneratorService {
      * Encuentra un día específico dentro del período
      */
     private int encontrarDiaEnPeriodo(LocalDate fechaInicio, int diaSemanaDeseado) {
-        // Buscar el primer día de la semana deseado dentro del período
+        
         for (int i = 0; i < 31; i++) {
             LocalDate fecha = fechaInicio.plusDays(i);
             if (fecha.getDayOfWeek().getValue() == diaSemanaDeseado) {
@@ -338,13 +338,13 @@ public class DataGeneratorService {
         try {
             System.out.println("Iniciando limpieza COMPLETA de datos...");
             
-            // 1. Primero eliminar TODAS las ventas
+            //Eliminar TODAS las ventas
             limpiarTodasLasVentas();
             
-            // 2. Luego eliminar TODOS los productos
+            //Eliminar TODOS los productos
             limpiarTodosLosProductos();
             
-            // 3. Finalmente eliminar TODOS los clientes
+            //Eliminar TODOS los clientes
             limpiarTodosLosClientes();
             
             System.out.println("✅ Limpieza COMPLETA de datos exitosa!");
