@@ -161,7 +161,7 @@ public class GraphPanel extends JPanel {
                     // Etiqueta de valor
                     g2d.setColor(Color.BLACK);
                     g2d.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-                    String valueLabel = String.format("%.0f", valores[i]);
+                    String valueLabel = String.format("$%.0f", valores[i]);
                     int textWidth = g2d.getFontMetrics().stringWidth(valueLabel);
                     g2d.drawString(valueLabel, x + barWidth/2 - textWidth/2, y - 5);
                     
