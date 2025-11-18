@@ -83,7 +83,7 @@ public class DashboardPanel extends JPanel {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(230, 240, 255)); // CELESTE CLARO
 
-        JLabel titleLabel = new JLabel("📊 Dashboard E-commerce - Análisis Estadístico");
+        JLabel titleLabel = new JLabel(" Dashboard E-commerce - Análisis Estadístico");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(new Color(50, 50, 50));
 
@@ -103,19 +103,19 @@ public class DashboardPanel extends JPanel {
         statsPanel.setBackground(new Color(240, 240, 240));
 
         // Tarjeta 1: Total Clientes
-        JPanel cardClientes = createStatCard("👥 Total Clientes", "0", new Color(41, 128, 185));
+        JPanel cardClientes = createStatCard(" Total Clientes", "0", new Color(41, 128, 185));
         lblTotalClientes = (JLabel) ((JPanel) cardClientes.getComponent(1)).getComponent(0);
 
         // Tarjeta 2: Total Productos
-        JPanel cardProductos = createStatCard("📦 Productos Activos", "0", new Color(39, 174, 96));
+        JPanel cardProductos = createStatCard(" Productos Activos", "0", new Color(39, 174, 96));
         lblTotalProductos = (JLabel) ((JPanel) cardProductos.getComponent(1)).getComponent(0);
 
         // Tarjeta 3: Ventas Hoy
-        JPanel cardVentas = createStatCard("🛒 Ventas Hoy", "0", new Color(243, 156, 18));
+        JPanel cardVentas = createStatCard(" Ventas Hoy", "0", new Color(243, 156, 18));
         lblVentasHoy = (JLabel) ((JPanel) cardVentas.getComponent(1)).getComponent(0);
 
         // Tarjeta 4: Ingresos Hoy
-        JPanel cardIngresos = createStatCard("💰 Ingresos Hoy", "$0.00", new Color(231, 76, 60));
+        JPanel cardIngresos = createStatCard(" Ingresos Hoy", "$0.00", new Color(231, 76, 60));
         lblIngresosHoy = (JLabel) ((JPanel) cardIngresos.getComponent(1)).getComponent(0);
 
         statsPanel.add(cardClientes);

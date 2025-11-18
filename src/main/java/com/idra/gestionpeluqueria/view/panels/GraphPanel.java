@@ -229,7 +229,7 @@ public class GraphPanel extends JPanel {
                     // Etiquetas de valor
                     g2d.setColor(Color.BLACK);
                     g2d.setFont(new Font("Segoe UI", Font.PLAIN, 10));
-                    String valueText = String.format("%.1f", valores[i]);
+                    String valueText = String.format("$%.1f", valores[i]);
                     int valueWidth = g2d.getFontMetrics().stringWidth(valueText);
                     g2d.drawString(valueText, xPoints[i] - valueWidth/2, yPoints[i] - 10);
                     
@@ -429,7 +429,7 @@ public class GraphPanel extends JPanel {
                     categorias[i] = truncarTexto(fila[0].toString(), 15); // nombre categoría
                     ventasCat[i] = ((Number) fila[1]).doubleValue(); // total ventas
                 }
-                crearGraficoBarras("Ventas por Categoría", categorias, ventasCat);
+                crearGraficoBarras("Ventas de Productos por Categoría - En barras horizontales ", categorias, ventasCat);
             }
             
             // Gráfico de métodos de pago (SOLO SI HAY DATOS)
@@ -443,7 +443,7 @@ public class GraphPanel extends JPanel {
                     metodos[i] = truncarTexto(fila[0].toString(), 15); // método pago
                     usos[i] = ((Number) fila[2]).doubleValue(); // cantidad ventas
                 }
-                crearGraficoTorta("Métodos de Pago Utilizados", metodos, usos);
+                crearGraficoTorta("Métodos de Pago Utilizados - En grafico de torta ", metodos, usos);
             }
             
             // Gráfico de productos más vendidos (SOLO SI HAY DATOS)
@@ -457,7 +457,7 @@ public class GraphPanel extends JPanel {
                     productos[i] = truncarTexto(fila[0].toString(), 15); // nombre producto
                     cantidades[i] = ((Number) fila[1]).doubleValue(); // unidades vendidas
                 }
-                crearGraficoBarras("Productos Más Vendidos", productos, cantidades);
+                crearGraficoBarras("Productos Más Vendidos - En barras horizontales ", productos, cantidades);
             }
             
             // Gráfico de ventas por día de la semana (SOLO SI HAY DATOS)
@@ -473,7 +473,7 @@ public class GraphPanel extends JPanel {
                         ventasDias[diaSemana - 1] = total;
                     }
                 }
-                crearGraficoLineas("Ventas por Día de Semana", dias, ventasDias);
+                crearGraficoLineas("Ventas en Pesos por Día de Semana - En grafico de lineas ", dias, ventasDias);
             }
             
             // Actualizar estadísticas

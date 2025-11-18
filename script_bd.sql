@@ -1,18 +1,11 @@
-
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
--- -----------------------------------------------------
 -- Schema ecommerce_stats
 -- -----------------------------------------------------
 DROP SCHEMA IF EXISTS `ecommerce_stats` ;
--- -----------------------------------------------------
--- Schema ecommerce_stats
--- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `ecommerce_stats` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
 USE `ecommerce_stats` ;
 
@@ -28,7 +21,7 @@ CREATE TABLE IF NOT EXISTS `ecommerce_stats`.`categorias` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `nombre` (`nombre` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 7
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -45,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `ecommerce_stats`.`zonas` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `nombre` (`nombre` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 9
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -72,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `ecommerce_stats`.`clientes` (
     FOREIGN KEY (`id_zona`)
     REFERENCES `ecommerce_stats`.`zonas` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 9
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -89,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `ecommerce_stats`.`metodos_pago` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `nombre` (`nombre` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 7
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -114,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `ecommerce_stats`.`productos` (
     FOREIGN KEY (`id_categoria`)
     REFERENCES `ecommerce_stats`.`categorias` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 11
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -148,37 +141,57 @@ CREATE TABLE IF NOT EXISTS `ecommerce_stats`.`ventas` (
     FOREIGN KEY (`id_metodo_pago`)
     REFERENCES `ecommerce_stats`.`metodos_pago` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 16
+AUTO_INCREMENT = 1
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
-USE `ecommerce_stats` ;
+-- -----------------------------------------------------
+-- INSERCIÓN DE DATOS DE REFERENCIA (ESENCIAL)
+-- -----------------------------------------------------
+
+-- Insertar categorías (ESENCIAL para que funcione el generador)
+INSERT INTO `categorias` (`nombre`, `descripcion`) VALUES
+('Electrodomésticos', 'Dispositivos electrónicos para el hogar'),
+('Tecnología', 'Dispositivos electrónicos y gadgets'),
+('Hogar', 'Artículos para el hogar y decoración'),
+('Deportes', 'Equipamiento deportivo y outdoor'),
+('Moda', 'Ropa y accesorios de moda');
+
+-- Insertar zonas (ESENCIAL para que funcione el generador)
+INSERT INTO `zonas` (`nombre`, `provincia`) VALUES
+('Centro', 'Buenos Aires'),
+('Norte', 'Buenos Aires'),
+('Sur', 'Buenos Aires'),
+('Este', 'Buenos Aires'),
+('Oeste', 'Buenos Aires'),
+('Palermo', 'Buenos Aires'),
+('Recoleta', 'Buenos Aires'),
+('Belgrano', 'Buenos Aires'),
+('Caballito', 'Buenos Aires'),
+('Flores', 'Buenos Aires');
+
+-- Insertar métodos de pago (ESENCIAL para que funcione el generador)
+INSERT INTO `metodos_pago` (`nombre`, `descripcion`) VALUES
+('Tarjeta Crédito', 'Pago con tarjeta de crédito'),
+('Tarjeta Débito', 'Pago con tarjeta de débito'),
+('Mercado Pago', 'Pago mediante Mercado Pago'),
+('Transferencia', 'Transferencia bancaria'),
+('Efectivo', 'Pago en efectivo');
 
 -- -----------------------------------------------------
--- Placeholder table for view `ecommerce_stats`.`vista_resumen_productos`
+-- Views
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ecommerce_stats`.`vista_resumen_productos` (`id` INT, `nombre` INT, `categoria` INT, `cantidad_ventas` INT, `unidades_vendidas` INT, `ingreso_total` INT, `promedio_venta` INT, `stock_actual` INT);
 
--- -----------------------------------------------------
--- Placeholder table for view `ecommerce_stats`.`vista_ventas_completas`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `ecommerce_stats`.`vista_ventas_completas` (`id` INT, `fecha` INT, `cliente_nombre` INT, `cliente_apellido` INT, `zona` INT, `producto` INT, `categoria` INT, `cantidad` INT, `precio_unitario` INT, `total` INT, `metodo_pago` INT, `dia_semana` INT, `mes` INT, `anio` INT);
+DROP VIEW IF EXISTS `ecommerce_stats`.`vista_resumen_productos`;
+CREATE VIEW `ecommerce_stats`.`vista_resumen_productos` AS 
+select `p`.`id` AS `id`,`p`.`nombre` AS `nombre`,`cat`.`nombre` AS `categoria`,count(`v`.`id`) AS `cantidad_ventas`,sum(`v`.`cantidad`) AS `unidades_vendidas`,sum(`v`.`total`) AS `ingreso_total`,avg(`v`.`total`) AS `promedio_venta`,`p`.`stock` AS `stock_actual` 
+from ((`ecommerce_stats`.`productos` `p` left join `ecommerce_stats`.`ventas` `v` on((`p`.`id` = `v`.`id_producto`))) join `ecommerce_stats`.`categorias` `cat` on((`p`.`id_categoria` = `cat`.`id`))) 
+group by `p`.`id`,`p`.`nombre`,`cat`.`nombre`,`p`.`stock`;
 
--- -----------------------------------------------------
--- View `ecommerce_stats`.`vista_resumen_productos`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `ecommerce_stats`.`vista_resumen_productos`;
-DROP VIEW IF EXISTS `ecommerce_stats`.`vista_resumen_productos` ;
-USE `ecommerce_stats`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `ecommerce_stats`.`vista_resumen_productos` AS select `p`.`id` AS `id`,`p`.`nombre` AS `nombre`,`cat`.`nombre` AS `categoria`,count(`v`.`id`) AS `cantidad_ventas`,sum(`v`.`cantidad`) AS `unidades_vendidas`,sum(`v`.`total`) AS `ingreso_total`,avg(`v`.`total`) AS `promedio_venta`,`p`.`stock` AS `stock_actual` from ((`ecommerce_stats`.`productos` `p` left join `ecommerce_stats`.`ventas` `v` on((`p`.`id` = `v`.`id_producto`))) join `ecommerce_stats`.`categorias` `cat` on((`p`.`id_categoria` = `cat`.`id`))) group by `p`.`id`,`p`.`nombre`,`cat`.`nombre`,`p`.`stock`;
-
--- -----------------------------------------------------
--- View `ecommerce_stats`.`vista_ventas_completas`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `ecommerce_stats`.`vista_ventas_completas`;
-DROP VIEW IF EXISTS `ecommerce_stats`.`vista_ventas_completas` ;
-USE `ecommerce_stats`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `ecommerce_stats`.`vista_ventas_completas` AS select `v`.`id` AS `id`,`v`.`fecha` AS `fecha`,`c`.`nombre` AS `cliente_nombre`,`c`.`apellido` AS `cliente_apellido`,`z`.`nombre` AS `zona`,`p`.`nombre` AS `producto`,`cat`.`nombre` AS `categoria`,`v`.`cantidad` AS `cantidad`,`v`.`precio_unitario` AS `precio_unitario`,`v`.`total` AS `total`,`mp`.`nombre` AS `metodo_pago`,dayname(`v`.`fecha`) AS `dia_semana`,month(`v`.`fecha`) AS `mes`,year(`v`.`fecha`) AS `anio` from (((((`ecommerce_stats`.`ventas` `v` join `ecommerce_stats`.`clientes` `c` on((`v`.`id_cliente` = `c`.`id`))) join `ecommerce_stats`.`zonas` `z` on((`c`.`id_zona` = `z`.`id`))) join `ecommerce_stats`.`productos` `p` on((`v`.`id_producto` = `p`.`id`))) join `ecommerce_stats`.`categorias` `cat` on((`p`.`id_categoria` = `cat`.`id`))) join `ecommerce_stats`.`metodos_pago` `mp` on((`v`.`id_metodo_pago` = `mp`.`id`)));
+DROP VIEW IF EXISTS `ecommerce_stats`.`vista_ventas_completas`;
+CREATE VIEW `ecommerce_stats`.`vista_ventas_completas` AS 
+select `v`.`id` AS `id`,`v`.`fecha` AS `fecha`,`c`.`nombre` AS `cliente_nombre`,`c`.`apellido` AS `cliente_apellido`,`z`.`nombre` AS `zona`,`p`.`nombre` AS `producto`,`cat`.`nombre` AS `categoria`,`v`.`cantidad` AS `cantidad`,`v`.`precio_unitario` AS `precio_unitario`,`v`.`total` AS `total`,`mp`.`nombre` AS `metodo_pago`,dayname(`v`.`fecha`) AS `dia_semana`,month(`v`.`fecha`) AS `mes`,year(`v`.`fecha`) AS `anio` 
+from (((((`ecommerce_stats`.`ventas` `v` join `ecommerce_stats`.`clientes` `c` on((`v`.`id_cliente` = `c`.`id`))) join `ecommerce_stats`.`zonas` `z` on((`c`.`id_zona` = `z`.`id`))) join `ecommerce_stats`.`productos` `p` on((`v`.`id_producto` = `p`.`id`))) join `ecommerce_stats`.`categorias` `cat` on((`p`.`id_categoria` = `cat`.`id`))) join `ecommerce_stats`.`metodos_pago` `mp` on((`v`.`id_metodo_pago` = `mp`.`id`)));
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

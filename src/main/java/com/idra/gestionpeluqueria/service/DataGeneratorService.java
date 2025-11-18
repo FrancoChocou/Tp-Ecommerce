@@ -17,6 +17,7 @@ import java.util.*;
 /**
  * Servicio para generar datos de prueba realistas para análisis estadísticos
  * Genera clientes, productos y ventas con distribución balanceada
+ * VERSIÓN MEJORADA - Con verificación de datos de referencia
  */
 public class DataGeneratorService {
     
@@ -63,11 +64,20 @@ public class DataGeneratorService {
     
     /**
      * Genera datos de prueba balanceados para análisis estadístico
+     * VERSIÓN MEJORADA - Con verificación previa
      */
     public void generarDatosPrueba() {
         try {
-            System.out.println("Iniciando generacion de datos de prueba...");
+            System.out.println("Iniciando generación de datos de prueba...");
             
+            // VERIFICAR que existen datos de referencia
+            if (!verificarDatosReferencia()) {
+                System.err.println("❌ ERROR: No hay datos de referencia (categorías, zonas, métodos de pago)");
+                System.err.println("💡 Ejecuta el script SQL mejorado primero");
+                return;
+            }
+            
+            System.out.println("✅ Datos de referencia verificados correctamente");
             System.out.println("Generando clientes...");
             List<Cliente> clientes = generarClientes(20);
             
@@ -77,15 +87,64 @@ public class DataGeneratorService {
             System.out.println("Generando ventas...");
             generarVentasConPatrones(clientes, productos, 80);
             
-            System.out.println("Datos de prueba generados exitosamente!");
+            System.out.println("✅ Datos de prueba generados exitosamente!");
             System.out.println("   - " + clientes.size() + " clientes creados");
             System.out.println("   - " + productos.size() + " productos creados"); 
             System.out.println("   - 80 ventas generadas");
             
         } catch (DAOException e) {
-            System.err.println("Error al generar datos de prueba: " + e.getMessage());
+            System.err.println("❌ Error al generar datos de prueba: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("❌ Error inesperado: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * VERIFICA que existen datos en las tablas de referencia
+     */
+    private boolean verificarDatosReferencia() throws DAOException {
+        try {
+            // Verificar que hay categorías
+            boolean hayCategorias = productoDAO.buscarTodos().isEmpty() ? 
+                verificarTablaReferencia("categorias") : true;
+            
+            // Verificar que hay zonas  
+            boolean hayZonas = clienteDAO.buscarTodos().isEmpty() ?
+                verificarTablaReferencia("zonas") : true;
+                
+            // Verificar que hay métodos de pago
+            boolean hayMetodosPago = verificarTablaReferencia("metodos_pago");
+            
+            return hayCategorias && hayZonas && hayMetodosPago;
+            
+        } catch (Exception e) {
+            System.err.println("Error al verificar datos de referencia: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Verifica una tabla de referencia específica
+     */
+    private boolean verificarTablaReferencia(String tabla) {
+        try {
+            // Consulta simple para verificar que la tabla tiene datos
+            java.sql.Connection conn = com.idra.gestionpeluqueria.config.DatabaseConfig.getInstance().getConnection();
+            String sql = "SELECT COUNT(*) as count FROM " + tabla;
+            try (java.sql.PreparedStatement stmt = conn.prepareStatement(sql);
+                 java.sql.ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int count = rs.getInt("count");
+                    System.out.println("📊 Tabla " + tabla + ": " + count + " registros");
+                    return count > 0;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al verificar tabla " + tabla + ": " + e.getMessage());
+        }
+        return false;
     }
     
     /**
@@ -101,7 +160,9 @@ public class DataGeneratorService {
             cliente.setTelefono(generarTelefono());
             cliente.setEmail(generarEmail(cliente.getNombre(), cliente.getApellido()));
             cliente.setEdad(18 + random.nextInt(47)); // 18-65 años
-            cliente.setIdZona(random.nextInt(ZONAS.length) + 1);
+            
+            // ID de zona entre 1-10 (según el script SQL mejorado)
+            cliente.setIdZona(random.nextInt(10) + 1);
             cliente.setFechaRegistro(LocalDate.now().minusDays(random.nextInt(365))); // Registrados en el último año
             cliente.setActivo(true);
             
@@ -124,7 +185,7 @@ public class DataGeneratorService {
                 Producto producto = new Producto();
                 producto.setNombre(PRODUCTOS_POR_CATEGORIA[catIndex][i % PRODUCTOS_POR_CATEGORIA[catIndex].length]);
                 producto.setDescripcion("Descripción de " + producto.getNombre());
-                producto.setIdCategoria(catIndex + 1);
+                producto.setIdCategoria(catIndex + 1); // IDs 1-5
                 producto.setPrecioUnitario(PRECIOS_POR_CATEGORIA[catIndex][i % PRECIOS_POR_CATEGORIA[catIndex].length]);
                 producto.setStock(50 + random.nextInt(100)); // Stock entre 50-150
                 producto.setActivo(true);
@@ -142,7 +203,11 @@ public class DataGeneratorService {
      * Genera ventas con patrones que creen correlaciones interesantes
      */
     private void generarVentasConPatrones(List<Cliente> clientes, List<Producto> productos, int cantidad) throws DAOException {
-        LocalDate fechaInicio = LocalDate.now().minusDays(15); // Últimos 15 días para tener más ventas hoy
+        if (clientes.isEmpty() || productos.isEmpty()) {
+            throw new DAOException("No hay clientes o productos para generar ventas");
+        }
+        
+        LocalDate fechaInicio = LocalDate.now().minusDays(30); // Últimos 30 días
         
         // Crear algunos patrones de correlación
         Map<Integer, Double> tendenciaPrecioCantidad = new HashMap<>();
@@ -166,7 +231,7 @@ public class DataGeneratorService {
         for (int i = 0; i < cantidad; i++) {
             Venta venta = new Venta();
             
-            // Fecha con patrón de días de semana - MEJORADO para más ventas hoy
+            // Fecha con patrón de días de semana
             LocalDateTime fecha = generarFechaConPatron(fechaInicio, tendenciaDiaSemana);
             venta.setFecha(fecha);
             
@@ -187,8 +252,8 @@ public class DataGeneratorService {
             double variacionPrecio = 0.9 + (random.nextDouble() * 0.2); // ±10% variación
             venta.setPrecioUnitario(producto.getPrecioUnitario() * variacionPrecio);
             
-            // Método de pago aleatorio (1-4)
-            venta.setIdMetodoPago(1 + random.nextInt(4));
+            // Método de pago aleatorio (1-5 según el script SQL mejorado)
+            venta.setIdMetodoPago(1 + random.nextInt(5));
             
             // Total calculado
             venta.setTotal(venta.getPrecioUnitario() * venta.getCantidad());
@@ -198,7 +263,7 @@ public class DataGeneratorService {
     }
     
     /**
-     * Genera fechas con patrones específicos (más ventas fines de semana y hoy) - MEJORADO
+     * Genera fechas con patrones específicos (más ventas fines de semana)
      */
     private LocalDateTime generarFechaConPatron(LocalDate fechaInicio, Map<Integer, Double> tendenciaDiaSemana) {
         int diasDesdeInicio;
@@ -206,11 +271,11 @@ public class DataGeneratorService {
         
         double probabilidad = random.nextDouble();
         
-        if (probabilidad < 0.4) {
-            // 40% de ventas sean de hoy
-            diasDesdeInicio = (int) (fechaInicio.until(LocalDate.now()).getDays());
+        if (probabilidad < 0.3) {
+            // 30% de ventas sean recientes
+            diasDesdeInicio = (int) (fechaInicio.until(LocalDate.now()).getDays()) - random.nextInt(7);
         } else if (probabilidad < 0.8) {
-            // 40% seguir patrón de días de semana
+            // 50% seguir patrón de días de semana
             List<Integer> dias = new ArrayList<>(tendenciaDiaSemana.keySet());
             List<Double> probabilidades = new ArrayList<>(tendenciaDiaSemana.values());
             int diaSeleccionado = seleccionarPorProbabilidad(dias, probabilidades);
@@ -221,7 +286,7 @@ public class DataGeneratorService {
             diasDesdeInicio = random.nextInt(totalDias);
         }
         
-        fecha = fechaInicio.plusDays(diasDesdeInicio);
+        fecha = fechaInicio.plusDays(Math.max(0, diasDesdeInicio));
         
         // Hora del día (más ventas en la tarde)
         int hora = 9 + random.nextInt(10); // 9-18hs
@@ -253,7 +318,7 @@ public class DataGeneratorService {
     }
     
     /**
-     * Encuentra un día específico dentro del período de 30 días
+     * Encuentra un día específico dentro del período
      */
     private int encontrarDiaEnPeriodo(LocalDate fechaInicio, int diaSemanaDeseado) {
         // Buscar el primer día de la semana deseado dentro del período
@@ -268,7 +333,6 @@ public class DataGeneratorService {
     
     /**
      * Elimina TODOS los datos de prueba generados (ventas, productos, clientes)
-     * Método SIMPLIFICADO - elimina todo sin verificar
      */
     public void limpiarDatosPrueba() {
         try {
@@ -283,13 +347,13 @@ public class DataGeneratorService {
             // 3. Finalmente eliminar TODOS los clientes
             limpiarTodosLosClientes();
             
-            System.out.println("Limpieza COMPLETA de datos exitosa!");
+            System.out.println("✅ Limpieza COMPLETA de datos exitosa!");
             System.out.println("   - Todas las ventas eliminadas");
             System.out.println("   - Todos los productos eliminados");
             System.out.println("   - Todos los clientes eliminados");
             
         } catch (DAOException e) {
-            System.err.println("Error al limpiar datos de prueba: " + e.getMessage());
+            System.err.println("❌ Error al limpiar datos de prueba: " + e.getMessage());
             e.printStackTrace();
         }
     }
