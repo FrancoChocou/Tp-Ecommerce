@@ -105,6 +105,8 @@ public class VentaDialog extends JDialog {
         comboProducto = new JComboBox<>();
         comboProducto.addActionListener(e -> actualizarPrecio());
         formPanel.add(comboProducto, gbc);
+        comboProducto.addActionListener(e -> actualizarPrecioDesdeProducto());
+        formPanel.add(comboProducto, gbc);
         
         // Cantidad
         gbc.gridx = 0; gbc.gridy = 2;
@@ -376,4 +378,11 @@ public class VentaDialog extends JDialog {
     public boolean isGuardadoExitoso() {
         return guardadoExitoso;
     }
+    private void actualizarPrecioDesdeProducto() {
+    if (comboProducto.getSelectedItem() instanceof Producto) {
+        Producto productoSeleccionado = (Producto) comboProducto.getSelectedItem();
+        txtPrecioUnitario.setText(String.format("%.2f", productoSeleccionado.getPrecioUnitario()));
+        calcularTotal(); // Para actualizar el total automáticamente
+    }
+}
 }

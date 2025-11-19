@@ -10,12 +10,12 @@ public class Producto {
     private double precioUnitario;
     private int stock;
     private boolean activo;
-    private LocalDate fechaCreacion; // Este campo podría estar causando el problema
+    private LocalDate fechaCreacion;
     
-    // Constructores
+    // Constructores (mantener los mismos)
     public Producto() {
-        this.fechaCreacion = LocalDate.now(); // Inicializar con fecha actual
-        this.activo = true; // Por defecto activo
+        this.fechaCreacion = LocalDate.now();
+        this.activo = true;
     }
     
     public Producto(String nombre, String descripcion, int idCategoria, 
@@ -28,7 +28,7 @@ public class Producto {
         this.stock = stock;
     }
     
-    // Getters y Setters
+    // Getters y Setters (mantener los mismos)
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     
@@ -54,10 +54,18 @@ public class Producto {
     public void setFechaCreacion(LocalDate fechaCreacion) { 
         this.fechaCreacion = fechaCreacion != null ? fechaCreacion : LocalDate.now();
     }
-     public boolean tieneStock() {
+    
+    public boolean tieneStock() {
         return this.stock > 0 && this.activo;
     }
-     public boolean tieneStockSuficiente(int cantidad) {
+    
+    public boolean tieneStockSuficiente(int cantidad) {
         return this.stock >= cantidad && this.activo;
+    }
+    
+    // ✅ MÉTODO TOString AGREGADO
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

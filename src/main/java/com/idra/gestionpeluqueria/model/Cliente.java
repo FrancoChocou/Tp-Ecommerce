@@ -11,13 +11,13 @@ public class Cliente {
     private int edad;
     private boolean activo;
     private int idZona;
-    private LocalDate fechaRegistro; // ✅ NUEVO CAMPO
+    private LocalDate fechaRegistro;
     
-    // Constructores
+    // Constructores (mantener los mismos que tienes)
     public Cliente() {
         this.activo = true;
         this.edad = 0;
-        this.fechaRegistro = LocalDate.now(); // ✅ Fecha actual por defecto
+        this.fechaRegistro = LocalDate.now();
     }
     
     public Cliente(String nombre, String apellido, String email, String telefono) {
@@ -28,7 +28,7 @@ public class Cliente {
         this.telefono = telefono;
     }
     
-    // Getters y Setters
+    // Getters y Setters (mantener los mismos)
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     
@@ -53,11 +53,17 @@ public class Cliente {
     public int getIdZona() { return idZona; }
     public void setIdZona(int idZona) { this.idZona = idZona; }
     
-    public LocalDate getFechaRegistro() { return fechaRegistro; } // ✅ NUEVO
-    public void setFechaRegistro(LocalDate fechaRegistro) { this.fechaRegistro = fechaRegistro; } // ✅ NUEVO
+    public LocalDate getFechaRegistro() { return fechaRegistro; }
+    public void setFechaRegistro(LocalDate fechaRegistro) { this.fechaRegistro = fechaRegistro; }
     
     // Método útil para obtener nombre completo
     public String getNombreCompleto() {
+        return nombre + " " + apellido;
+    }
+    
+    // ✅ MÉTODO TOString AGREGADO
+    @Override
+    public String toString() {
         return nombre + " " + apellido;
     }
 }
