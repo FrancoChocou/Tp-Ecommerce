@@ -13,11 +13,11 @@ public class MainFrame extends JFrame {
     private DashboardPanel dashboardPanel;
     private ClientePanel clientePanel;
     private ProductoPanel servicioPanel;
-    private VentaPanel turnoPanel;
+    private VentaPanel VentaPanel;
     private GraphPanel graphPanel;
 
     // Barra de navegación 
-    private JButton btnDashboard, btnClientes, btnServicios, btnTurnos, btnGraficos, btnSalir;
+    private JButton btnDashboard, btnClientes, btnServicios, btnVentas, btnGraficos, btnSalir;
 
     public MainFrame() {
         initializeUI();
@@ -48,13 +48,13 @@ public class MainFrame extends JFrame {
         dashboardPanel = new DashboardPanel();
         clientePanel = new ClientePanel();
         servicioPanel = new ProductoPanel();
-        turnoPanel = new VentaPanel();
+        VentaPanel = new VentaPanel();
         graphPanel = new GraphPanel();
 
         mainPanel.add(dashboardPanel, "DASHBOARD");
         mainPanel.add(clientePanel, "CLIENTES");
         mainPanel.add(servicioPanel, "SERVICIOS");
-        mainPanel.add(turnoPanel, "TURNOS");
+        mainPanel.add(VentaPanel, "Ventas");
         mainPanel.add(graphPanel, "GRAFICOS"); 
 
         add(mainPanel, BorderLayout.CENTER);
@@ -74,7 +74,7 @@ public class MainFrame extends JFrame {
         btnDashboard = createNavButton("Dashboard", new Color(70, 130, 180));
         btnClientes = createNavButton("Clientes", new Color(39, 174, 96));
         btnServicios = createNavButton("Productos", new Color(155, 89, 182));
-        btnTurnos = createNavButton("Turnos", new Color(241, 196, 15));
+        btnVentas = createNavButton("Ventas", new Color(241, 196, 15));
         btnGraficos = createNavButton("Gráficos", new Color(230, 126, 34));
         btnSalir = createNavButton("Salir", new Color(231, 76, 60));
 
@@ -84,7 +84,7 @@ public class MainFrame extends JFrame {
         navPanel.add(Box.createHorizontalStrut(10));
         navPanel.add(btnServicios);
         navPanel.add(Box.createHorizontalStrut(10));
-        navPanel.add(btnTurnos);
+        navPanel.add(btnVentas);
         navPanel.add(Box.createHorizontalStrut(10));
         navPanel.add(btnGraficos);
         navPanel.add(Box.createHorizontalStrut(50));
@@ -133,7 +133,7 @@ public class MainFrame extends JFrame {
         btnDashboard.addActionListener(e -> showPanel("DASHBOARD", btnDashboard));
         btnClientes.addActionListener(e -> showPanel("CLIENTES", btnClientes));
         btnServicios.addActionListener(e -> showPanel("SERVICIOS", btnServicios));
-        btnTurnos.addActionListener(e -> showPanel("TURNOS", btnTurnos));
+        btnVentas.addActionListener(e -> showPanel("Ventas", btnVentas));
         btnGraficos.addActionListener(e -> showPanel("GRAFICOS", btnGraficos));
 
         btnSalir.addActionListener(e -> {
@@ -169,13 +169,13 @@ public class MainFrame extends JFrame {
         btnDashboard.setBackground(new Color(70, 130, 180));
         btnClientes.setBackground(new Color(39, 174, 96));
         btnServicios.setBackground(new Color(155, 89, 182));
-        btnTurnos.setBackground(new Color(241, 196, 15));
+        btnVentas.setBackground(new Color(241, 196, 15));
         btnGraficos.setBackground(new Color(230, 126, 34));
 
         btnDashboard.setForeground(Color.WHITE);
         btnClientes.setForeground(Color.WHITE);
         btnServicios.setForeground(Color.WHITE);
-        btnTurnos.setForeground(Color.WHITE);
+        btnVentas.setForeground(Color.WHITE);
         btnGraficos.setForeground(Color.WHITE);
     }
 
@@ -196,9 +196,9 @@ public class MainFrame extends JFrame {
                     servicioPanel.actualizarTabla();
                 }
                 break;
-            case "TURNOS":
-                if (turnoPanel != null) {
-                    turnoPanel.actualizarTabla();
+            case "Ventas":
+                if (VentaPanel != null) {
+                    VentaPanel.actualizarTabla();
                 }
                 break;
             case "GRAFICOS":

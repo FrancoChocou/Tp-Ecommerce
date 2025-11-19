@@ -22,107 +22,169 @@ public class ClienteDAOImpl implements ClienteDAO {
     }
     
     @Override
-    public void crear(Cliente cliente) throws DAOException {
-        String sql = "INSERT INTO clientes (nombre, apellido, telefono, email, edad, id_zona, fecha_registro, activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
-            stmt.setString(1, cliente.getNombre());
-            stmt.setString(2, cliente.getApellido());
-            stmt.setString(3, cliente.getTelefono());
-            stmt.setString(4, cliente.getEmail());
-            stmt.setInt(5, cliente.getEdad());
-            stmt.setInt(6, cliente.getIdZona());
-            stmt.setDate(7, Date.valueOf(cliente.getFechaRegistro()));
-            stmt.setBoolean(8, cliente.isActivo());
-            
-            int affectedRows = stmt.executeUpdate();
-            
-            if (affectedRows == 0) {
-                throw new DAOException("Error al crear cliente, ninguna fila afectada.");
-            }
-            
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    cliente.setId(generatedKeys.getInt(1));
-                } else {
-                    throw new DAOException("Error al obtener ID generado para el cliente.");
-                }
-            }
-            
-        } catch (SQLException e) {
-            throw new DAOException("Error al crear cliente en la base de datos", e);
-        }
-    }
+   
+public void crear(Cliente cliente) throws DAOException {
+    String sql = "INSERT INTO clientes (nombre, apellido, email, telefono, edad, id_zona, fecha_registro, activo) " +
+                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
-    @Override
-    public Cliente buscarPorId(int id) throws DAOException {
-        String sql = "SELECT * FROM clientes WHERE id = ?";
-        Cliente cliente = null;
+    try (Connection conn = DatabaseConfig.getInstance().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
         
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            
+        // ✅ ORDEN CORRECTO según la estructura de tu tabla
+        stmt.setString(1, cliente.getNombre());      // nombre
+        stmt.setString(2, cliente.getApellido());    // apellido  
+        stmt.setString(3, cliente.getEmail());       // email
+        stmt.setString(4, cliente.getTelefono());    // telefono
+        stmt.setInt(5, cliente.getEdad());           // edad
+        stmt.setInt(6, cliente.getIdZona());         // id_zona
+        stmt.setDate(7, java.sql.Date.valueOf(cliente.getFechaRegistro())); // fecha_registro
+        stmt.setBoolean(8, cliente.isActivo());      // activo
+        
+        int affectedRows = stmt.executeUpdate();
+        
+        if (affectedRows == 0) {
+            throw new DAOException("Error al crear cliente, ninguna fila afectada");
+        }
+        
+        // Obtener el ID generado
+        try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                cliente.setId(generatedKeys.getInt(1));
+            }
+        }
+        
+    } catch (SQLException e) {
+        throw new DAOException("Error al crear cliente: " + e.getMessage(), e);
+    }
+}
+    
+   @Override
+
+public Cliente buscarPorId(int id) throws DAOException {
+    String sql = "SELECT id, nombre, apellido, email, telefono, edad, id_zona, fecha_registro, activo " +
+                 "FROM clientes WHERE id = ?";
+    
+    try (Connection conn = DatabaseConfig.getInstance().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setInt(1, id);
+        try (ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
-                cliente = mapResultSetToCliente(rs);
+                Cliente cliente = new Cliente();
+                cliente.setId(rs.getInt("id"));
+                cliente.setNombre(rs.getString("nombre"));
+                
+                // ✅ VERIFICAR QUE ESTE ORDEN ES CORRECTO
+                cliente.setApellido(rs.getString("apellido")); // Columna 3: apellido
+                cliente.setEmail(rs.getString("email"));       // Columna 4: email
+                cliente.setTelefono(rs.getString("telefono")); // Columna 5: telefono
+                
+                cliente.setEdad(rs.getInt("edad"));
+                cliente.setIdZona(rs.getInt("id_zona"));
+                
+                // Fecha registro
+                java.sql.Date fechaSql = rs.getDate("fecha_registro");
+                if (fechaSql != null) {
+                    cliente.setFechaRegistro(fechaSql.toLocalDate());
+                }
+                
+                cliente.setActivo(rs.getBoolean("activo"));
+                
+                // DEBUG
+                System.out.println("DAO - Cliente cargado:");
+                System.out.println("  Nombre: " + cliente.getNombre());
+                System.out.println("  Apellido: " + cliente.getApellido());
+                System.out.println("  Email: " + cliente.getEmail());
+                System.out.println("  Activo: " + cliente.isActivo());
+                
+                return cliente;
             }
-            
-        } catch (SQLException e) {
-            throw new DAOException("Error al buscar cliente por ID: " + id, e);
         }
-        
-        return cliente;
+    } catch (SQLException e) {
+        throw new DAOException("Error al buscar cliente por ID: " + e.getMessage(), e);
     }
+    return null;
+}
     
     @Override
-    public List<Cliente> buscarTodos() throws DAOException {
-        String sql = "SELECT * FROM clientes ORDER BY apellido, nombre";
-        List<Cliente> clientes = new ArrayList<>();
+public List<Cliente> buscarTodos() throws DAOException {
+    List<Cliente> clientes = new ArrayList<>();
+    String sql = "SELECT id, nombre, apellido, email, telefono, edad, id_zona, fecha_registro, activo FROM clientes";
+    
+    try (Connection conn = DatabaseConfig.getInstance().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
         
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+            Cliente cliente = new Cliente();
+            cliente.setId(rs.getInt("id"));
+            cliente.setNombre(rs.getString("nombre"));
             
-            while (rs.next()) {
-                clientes.add(mapResultSetToCliente(rs));
+            // ✅ CORREGIDO: Orden correcto
+            cliente.setApellido(rs.getString("apellido")); // ✅ apellido
+            cliente.setEmail(rs.getString("email"));       // ✅ email
+            
+            cliente.setTelefono(rs.getString("telefono"));
+            cliente.setEdad(rs.getInt("edad"));
+            cliente.setIdZona(rs.getInt("id_zona"));
+            
+            java.sql.Date fechaSql = rs.getDate("fecha_registro");
+            if (fechaSql != null) {
+                cliente.setFechaRegistro(fechaSql.toLocalDate());
             }
             
-        } catch (SQLException e) {
-            throw new DAOException("Error al buscar todos los clientes", e);
+            cliente.setActivo(rs.getBoolean("activo"));
+            clientes.add(cliente);
         }
         
-        return clientes;
+    } catch (SQLException e) {
+        throw new DAOException("Error al obtener todos los clientes: " + e.getMessage(), e);
     }
+    return clientes;
+}
     
     @Override
-    public List<Cliente> buscarPorNombre(String nombre) throws DAOException {
-        String sql = "SELECT * FROM clientes WHERE nombre LIKE ? OR apellido LIKE ? ORDER BY apellido, nombre";
-        List<Cliente> clientes = new ArrayList<>();
+public List<Cliente> buscarPorNombre(String nombre) throws DAOException {
+    List<Cliente> clientes = new ArrayList<>();
+    String sql = "SELECT id, nombre, apellido, email, telefono, edad, id_zona, fecha_registro, activo " +
+                 "FROM clientes WHERE nombre LIKE ? OR apellido LIKE ?";
+    
+    try (Connection conn = DatabaseConfig.getInstance().getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
         
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            String searchPattern = "%" + nombre + "%";
-            stmt.setString(1, searchPattern);
-            stmt.setString(2, searchPattern);
-            
-            ResultSet rs = stmt.executeQuery();
-            
+        String likePattern = "%" + nombre + "%";
+        stmt.setString(1, likePattern);
+        stmt.setString(2, likePattern);
+        
+        try (ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                clientes.add(mapResultSetToCliente(rs));
+                Cliente cliente = new Cliente();
+                cliente.setId(rs.getInt("id"));
+                cliente.setNombre(rs.getString("nombre"));
+                
+                // ✅ CORREGIDO
+                cliente.setApellido(rs.getString("apellido")); // ✅ apellido
+                cliente.setEmail(rs.getString("email"));       // ✅ email
+                
+                cliente.setTelefono(rs.getString("telefono"));
+                cliente.setEdad(rs.getInt("edad"));
+                cliente.setIdZona(rs.getInt("id_zona"));
+                
+                java.sql.Date fechaSql = rs.getDate("fecha_registro");
+                if (fechaSql != null) {
+                    cliente.setFechaRegistro(fechaSql.toLocalDate());
+                }
+                
+                cliente.setActivo(rs.getBoolean("activo"));
+                clientes.add(cliente);
             }
-            
-        } catch (SQLException e) {
-            throw new DAOException("Error al buscar clientes por nombre: " + nombre, e);
         }
         
-        return clientes;
+    } catch (SQLException e) {
+        throw new DAOException("Error al buscar clientes por nombre: " + e.getMessage(), e);
     }
-    
+    return clientes;
+}
     @Override
     public void actualizar(Cliente cliente) throws DAOException {
         String sql = "UPDATE clientes SET nombre = ?, apellido = ?, telefono = ?, email = ?, edad = ?, id_zona = ?, activo = ? WHERE id = ?";

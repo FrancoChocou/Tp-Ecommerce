@@ -1,252 +1,275 @@
 package com.idra.gestionpeluqueria.view.dialogs;
 
-import com.idra.gestionpeluqueria.model.Producto;
+import com.idra.gestionpeluqueria.controller.CategoriaController;
 import com.idra.gestionpeluqueria.controller.ProductoController;
 import com.idra.gestionpeluqueria.exception.ServiceException;
+import com.idra.gestionpeluqueria.model.Producto;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
 
-/**
- * Dialogo para crear y editar productos del e-commerce.
- * Proporciona un formulario con validaciones para ingresar 
- * la informacion de un producto nuevo o modificar uno existente.
- * 
- * @author Idra
- */
 public class ProductoDialog extends JDialog {
-    private JTextField txtNombre, txtDescripcion, txtPrecio, txtStock, txtCategoria;
+    private JTextField txtNombre;
+    private JTextArea txtDescripcion;
+    private JComboBox<String> comboCategoria;
+    private JTextField txtPrecio;
+    private JTextField txtStock;
     private JCheckBox chkActivo;
-    private JButton btnGuardar, btnCancelar;
-    private final ProductoController productoController;
-    private final Producto productoEditar;
-    private boolean guardadoExitoso;
+    private JButton btnGuardar;
+    private JButton btnCancelar;
     
-    /**
-     * Constructor que crea el diálogo para agregar o editar un producto.
-     * 
-     * @param parent El frame padre del diálogo
-     * @param titulo El título a mostrar en el diálogo
-     * @param productoEditar El producto a editar, o null para crear uno nuevo
-     */
-    public ProductoDialog(JFrame parent, String titulo, Producto productoEditar) {
+    private Producto producto;
+    private boolean guardadoExitoso;
+    private CategoriaController categoriaController;
+
+    public ProductoDialog(JFrame parent, String titulo, Producto producto) {
         super(parent, titulo, true);
-        this.productoEditar = productoEditar;
-        this.productoController = new ProductoController();
+        this.producto = producto;
         this.guardadoExitoso = false;
+        this.categoriaController = new CategoriaController();
         
         initializeUI();
-        if (productoEditar != null) {
+        cargarCategorias();
+        if (producto != null) {
             cargarDatosProducto();
         }
+        
+        pack();
+        setLocationRelativeTo(parent);
+        setResizable(false);
     }
 
     private void initializeUI() {
-        setSize(450, 400);
-        setLocationRelativeTo(getParent());
-        setResizable(false);
         setLayout(new BorderLayout(10, 10));
+        setBackground(Color.WHITE);
         
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        // Panel principal
+        JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        JPanel formPanel = createFormPanel();
-        JPanel buttonPanel = createButtonPanel();
-        
-        mainPanel.add(formPanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        
-        add(mainPanel);
-    }
-
-    private JPanel createFormPanel() {
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBorder(BorderFactory.createTitledBorder("Datos del Producto"));
+        mainPanel.setBackground(Color.WHITE);
         
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        
+        // Título
+        JLabel lblTitulo = new JLabel(getTitle());
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblTitulo.setForeground(new Color(50, 50, 50));
+        
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        mainPanel.add(lblTitulo, gbc);
+        
+        // Separador
+        JSeparator separator = new JSeparator();
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        mainPanel.add(separator, gbc);
+        
+        // Campos del formulario
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(10, 5, 5, 5);
         
         // Nombre
-        gbc.gridx = 0; gbc.gridy = 0;
-        formPanel.add(new JLabel("Nombre:"), gbc);
-        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        mainPanel.add(new JLabel("Nombre:"), gbc);
+        
         txtNombre = new JTextField(20);
-        formPanel.add(txtNombre, gbc);
+        gbc.gridx = 1;
+        mainPanel.add(txtNombre, gbc);
         
         // Descripción
-        gbc.gridx = 0; gbc.gridy = 1;
-        formPanel.add(new JLabel("Descripción:"), gbc);
-        gbc.gridx = 1;
-        txtDescripcion = new JTextField(20);
-        formPanel.add(txtDescripcion, gbc);
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        mainPanel.add(new JLabel("Descripción:"), gbc);
         
-        // Categoría (ID)
-        gbc.gridx = 0; gbc.gridy = 2;
-        formPanel.add(new JLabel("Categoría (ID):"), gbc);
+        txtDescripcion = new JTextArea(3, 20);
+        txtDescripcion.setLineWrap(true);
+        txtDescripcion.setWrapStyleWord(true);
+        JScrollPane scrollDescripcion = new JScrollPane(txtDescripcion);
         gbc.gridx = 1;
-        txtCategoria = new JTextField(20);
-        txtCategoria.setToolTipText("Ingrese el ID numérico de la categoría (1=Electrónicos, 2=Ropa, etc.)");
-        formPanel.add(txtCategoria, gbc);
+        mainPanel.add(scrollDescripcion, gbc);
         
-        // Precio Unitario
-        gbc.gridx = 0; gbc.gridy = 3;
-        formPanel.add(new JLabel("Precio Unitario:"), gbc);
+        // Categoría (COMBOBOX EN LUGAR DE TEXTFIELD)
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        mainPanel.add(new JLabel("Categoría:"), gbc);
+        
+        comboCategoria = new JComboBox<>();
+        comboCategoria.setPreferredSize(new Dimension(200, 25));
         gbc.gridx = 1;
-        txtPrecio = new JTextField(20);
-        formPanel.add(txtPrecio, gbc);
+        mainPanel.add(comboCategoria, gbc);
+        
+        // Precio
+        gbc.gridy = 5;
+        gbc.gridx = 0;
+        mainPanel.add(new JLabel("Precio:"), gbc);
+        
+        txtPrecio = new JTextField(10);
+        gbc.gridx = 1;
+        mainPanel.add(txtPrecio, gbc);
         
         // Stock
-        gbc.gridx = 0; gbc.gridy = 4;
-        formPanel.add(new JLabel("Stock:"), gbc);
+        gbc.gridy = 6;
+        gbc.gridx = 0;
+        mainPanel.add(new JLabel("Stock:"), gbc);
+        
+        txtStock = new JTextField(10);
         gbc.gridx = 1;
-        txtStock = new JTextField(20);
-        formPanel.add(txtStock, gbc);
+        mainPanel.add(txtStock, gbc);
         
         // Activo
-        gbc.gridx = 0; gbc.gridy = 5;
-        formPanel.add(new JLabel("Activo:"), gbc);
-        gbc.gridx = 1;
-        chkActivo = new JCheckBox();
+        gbc.gridy = 7;
+        gbc.gridx = 0;
+        mainPanel.add(new JLabel("Estado:"), gbc);
+        
+        chkActivo = new JCheckBox("Producto activo");
         chkActivo.setSelected(true);
-        formPanel.add(chkActivo, gbc);
+        chkActivo.setBackground(Color.WHITE);
+        gbc.gridx = 1;
+        mainPanel.add(chkActivo, gbc);
         
-        return formPanel;
-    }
-
-    private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Panel de botones
+        gbc.gridy = 8;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         
-        btnGuardar = new JButton("💾 Guardar");
-        btnCancelar = new JButton("❌ Cancelar");
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        buttonPanel.setBackground(Color.WHITE);
         
+        btnGuardar = new JButton("Guardar");
         btnGuardar.setBackground(new Color(39, 174, 96));
         btnGuardar.setForeground(Color.WHITE);
         btnGuardar.setFocusPainted(false);
         
+        btnCancelar = new JButton("Cancelar");
         btnCancelar.setBackground(new Color(231, 76, 60));
         btnCancelar.setForeground(Color.WHITE);
         btnCancelar.setFocusPainted(false);
         
-        btnGuardar.addActionListener(e -> guardarProducto());
+        btnGuardar.addActionListener(new GuardarActionListener());
         btnCancelar.addActionListener(e -> dispose());
         
-        buttonPanel.add(btnCancelar);
         buttonPanel.add(btnGuardar);
+        buttonPanel.add(btnCancelar);
         
-        return buttonPanel;
+        mainPanel.add(buttonPanel, gbc);
+        
+        add(mainPanel, BorderLayout.CENTER);
     }
 
-    private void cargarDatosProducto() {
-        if (productoEditar != null) {
-            txtNombre.setText(productoEditar.getNombre());
-            txtDescripcion.setText(productoEditar.getDescripcion());
-            txtCategoria.setText(String.valueOf(productoEditar.getIdCategoria()));
-            txtPrecio.setText(String.valueOf(productoEditar.getPrecioUnitario()));
-            txtStock.setText(String.valueOf(productoEditar.getStock()));
-            chkActivo.setSelected(productoEditar.isActivo());
+    private void cargarCategorias() {
+        try {
+            comboCategoria.removeAllItems();
+            
+            List<String> categorias = categoriaController.listarNombresCategorias();
+            for (String categoria : categorias) {
+                comboCategoria.addItem(categoria);
+            }
+            
+            // Seleccionar la primera categoría por defecto
+            if (comboCategoria.getItemCount() > 0) {
+                comboCategoria.setSelectedIndex(0);
+            }
+            
+        } catch (ServiceException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error al cargar categorías: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+            
+            // Fallback con categorías por defecto
+            comboCategoria.addItem("Electrodomésticos");
+            comboCategoria.addItem("Tecnología");
+            comboCategoria.addItem("Hogar");
+            comboCategoria.addItem("Deportes");
+            comboCategoria.addItem("Moda");
         }
     }
 
-    private void guardarProducto() {
-        try {
-            if (!validarCampos()) {
-                return;
+    private void cargarDatosProducto() {
+        if (producto != null) {
+            txtNombre.setText(producto.getNombre());
+            txtDescripcion.setText(producto.getDescripcion());
+            txtPrecio.setText(String.valueOf(producto.getPrecioUnitario()));
+            txtStock.setText(String.valueOf(producto.getStock()));
+            chkActivo.setSelected(producto.isActivo());
+            
+            // Establecer la categoría correcta en el ComboBox
+            try {
+                String nombreCategoria = categoriaController.obtenerNombreCategoriaPorId(producto.getIdCategoria());
+                comboCategoria.setSelectedItem(nombreCategoria);
+            } catch (ServiceException e) {
+                // Si hay error, dejar la primera categoría seleccionada
+                System.err.println("Error al cargar categoría del producto: " + e.getMessage());
             }
-            
-            if (productoEditar == null) {
-                // Crear nuevo producto
-                Producto nuevoProducto = new Producto(
-                    txtNombre.getText().trim(),
-                    txtDescripcion.getText().trim(),
-                    Integer.parseInt(txtCategoria.getText().trim()),
-                    Double.parseDouble(txtPrecio.getText().trim()),
-                    Integer.parseInt(txtStock.getText().trim())
-                );
-                nuevoProducto.setActivo(chkActivo.isSelected());
-                
-                productoController.crearProducto(nuevoProducto);
-                
-                JOptionPane.showMessageDialog(this, 
-                    "Producto creado exitosamente!", 
-                    "Éxito", 
-                    JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                // Actualizar producto existente
-                productoEditar.setNombre(txtNombre.getText().trim());
-                productoEditar.setDescripcion(txtDescripcion.getText().trim());
-                productoEditar.setIdCategoria(Integer.parseInt(txtCategoria.getText().trim()));
-                productoEditar.setPrecioUnitario(Double.parseDouble(txtPrecio.getText().trim()));
-                productoEditar.setStock(Integer.parseInt(txtStock.getText().trim()));
-                productoEditar.setActivo(chkActivo.isSelected());
-                
-                productoController.actualizarProducto(productoEditar);
-                
-                JOptionPane.showMessageDialog(this, 
-                    "Producto actualizado exitosamente!", 
-                    "Éxito", 
-                    JOptionPane.INFORMATION_MESSAGE);
-            }
-            
-            guardadoExitoso = true;
-            dispose();
-            
-        } catch (ServiceException | NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, 
-            "Error: " + ex.getMessage(), 
-            "Error", 
-            JOptionPane.ERROR_MESSAGE);
+        }
     }
-} 
+
+    private class GuardarActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (validarCampos()) {
+                guardarProducto();
+            }
+        }
+    }
 
     private boolean validarCampos() {
+        // Validar nombre
         if (txtNombre.getText().trim().isEmpty()) {
-            mostrarError("El nombre es obligatorio");
+            JOptionPane.showMessageDialog(this,
+                "El nombre del producto es obligatorio.",
+                "Validación",
+                JOptionPane.WARNING_MESSAGE);
             txtNombre.requestFocus();
             return false;
         }
         
-        if (txtDescripcion.getText().trim().isEmpty()) {
-            mostrarError("La descripción es obligatoria");
-            txtDescripcion.requestFocus();
-            return false;
-        }
-        
-        try {
-            int categoria = Integer.parseInt(txtCategoria.getText().trim());
-            if (categoria <= 0) {
-                mostrarError("La categoría debe ser un número mayor a 0");
-                txtCategoria.requestFocus();
-                return false;
-            }
-        } catch (NumberFormatException e) {
-            mostrarError("La categoría debe ser un número válido");
-            txtCategoria.requestFocus();
-            return false;
-        }
-        
+        // Validar precio
         try {
             double precio = Double.parseDouble(txtPrecio.getText().trim());
             if (precio <= 0) {
-                mostrarError("El precio debe ser mayor a 0");
+                JOptionPane.showMessageDialog(this,
+                    "El precio debe ser mayor a 0.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE);
                 txtPrecio.requestFocus();
                 return false;
             }
         } catch (NumberFormatException e) {
-            mostrarError("El precio debe ser un número válido");
+            JOptionPane.showMessageDialog(this,
+                "El precio debe ser un número válido.",
+                "Validación",
+                JOptionPane.WARNING_MESSAGE);
             txtPrecio.requestFocus();
             return false;
         }
         
+        // Validar stock
         try {
             int stock = Integer.parseInt(txtStock.getText().trim());
             if (stock < 0) {
-                mostrarError("El stock no puede ser negativo");
+                JOptionPane.showMessageDialog(this,
+                    "El stock no puede ser negativo.",
+                    "Validación",
+                    JOptionPane.WARNING_MESSAGE);
                 txtStock.requestFocus();
                 return false;
             }
         } catch (NumberFormatException e) {
-            mostrarError("El stock debe ser un número válido");
+            JOptionPane.showMessageDialog(this,
+                "El stock debe ser un número entero válido.",
+                "Validación",
+                JOptionPane.WARNING_MESSAGE);
             txtStock.requestFocus();
             return false;
         }
@@ -254,18 +277,51 @@ public class ProductoDialog extends JDialog {
         return true;
     }
 
-    private void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(this, 
-            mensaje, 
-            "Error de Validación", 
-            JOptionPane.WARNING_MESSAGE);
+    private void guardarProducto() {
+        try {
+            ProductoController productoController = new ProductoController();
+            
+            if (producto == null) {
+                // Nuevo producto
+                producto = new Producto();
+            }
+            
+            // Obtener datos del formulario
+            producto.setNombre(txtNombre.getText().trim());
+            producto.setDescripcion(txtDescripcion.getText().trim());
+            
+            // Obtener ID de la categoría seleccionada
+            String categoriaSeleccionada = (String) comboCategoria.getSelectedItem();
+            int idCategoria = categoriaController.obtenerIdCategoriaPorNombre(categoriaSeleccionada);
+            producto.setIdCategoria(idCategoria);
+            
+            producto.setPrecioUnitario(Double.parseDouble(txtPrecio.getText().trim()));
+            producto.setStock(Integer.parseInt(txtStock.getText().trim()));
+            producto.setActivo(chkActivo.isSelected());
+            
+            // Guardar producto
+            if (producto.getId() == 0) {
+                productoController.crearProducto(producto);
+            } else {
+                productoController.actualizarProducto(producto);
+            }
+            
+            guardadoExitoso = true;
+            dispose();
+            
+        } catch (ServiceException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error al guardar producto: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Error inesperado: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
-    
-    /**
-     * Verifica si el producto fue guardado exitosamente.
-     * 
-     * @return true si el guardado fue exitoso, false en caso contrario
-     */
+
     public boolean isGuardadoExitoso() {
         return guardadoExitoso;
     }

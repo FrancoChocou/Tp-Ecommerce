@@ -1,5 +1,5 @@
 package com.idra.gestionpeluqueria.service.impl;
-
+import java.time.LocalDate;
 import com.idra.gestionpeluqueria.model.Producto;
 import com.idra.gestionpeluqueria.exception.ServiceException;
 import java.util.List;
@@ -30,16 +30,26 @@ public class ProductoServiceImpl implements ProductoService {
     }
     
     @Override
-    public void crearProducto(Producto producto) throws ServiceException {
-        try {
-            if (!validarProducto(producto)) {
-                throw new ValidacionException("Datos del producto no válidos");
-            }
-            productoDAO.crear(producto);
-        } catch (Exception e) {
-            throw new ServiceException("Error al crear producto: " + e.getMessage(), e);
+    
+public void crearProducto(Producto producto) throws ServiceException {
+    try {
+        // ✅ Ahora LocalDate funciona porque tenemos el import
+        if (producto.getFechaCreacion() == null) {
+            producto.setFechaCreacion(LocalDate.now());
+            System.out.println("Fecha de creación inicializada: " + producto.getFechaCreacion());
         }
+        
+        if (!validarProducto(producto)) {
+            throw new ValidacionException("Datos del producto no válidos");
+        }
+        
+        productoDAO.crear(producto);
+        
+    } catch (Exception e) {
+        throw new ServiceException("Error al crear producto: " + e.getMessage(), e);
     }
+}
+
     
     @Override
     public Producto buscarProductoPorId(int id) throws ServiceException {
@@ -121,31 +131,31 @@ public class ProductoServiceImpl implements ProductoService {
     
     @Override
     public void reducirStockProducto(int idProducto, int cantidad) throws ServiceException {
-        try {
-            if (cantidad <= 0) {
-                throw new ValidacionException("La cantidad a reducir debe ser mayor a cero");
-            }
-            
-            Producto producto = productoDAO.buscarPorId(idProducto);
-            if (producto == null) {
-                throw new ValidacionException("Producto no encontrado");
-            }
-            
-            if (!producto.tieneStock()) {
-                throw new ValidacionException("El producto no tiene stock disponible");
-            }
-            
-            if (producto.getStock() < cantidad) {
-                throw new ValidacionException("Stock insuficiente. Disponible: " + producto.getStock() + ", Solicitado: " + cantidad);
-            }
-            
-            productoDAO.actualizarStock(idProducto, producto.getStock() - cantidad);
-            
-        } catch (Exception e) {
-            throw new ServiceException("Error al reducir stock del producto: " + e.getMessage(), e);
+    try {
+        if (cantidad <= 0) {
+            throw new ValidacionException("La cantidad a reducir debe ser mayor a cero");
         }
+        
+        Producto producto = productoDAO.buscarPorId(idProducto);
+        if (producto == null) {
+            throw new ValidacionException("Producto no encontrado");
+        }
+        
+        // ✅ CORREGIDO: Usar el método que ahora existe
+        if (!producto.tieneStock()) {
+            throw new ValidacionException("El producto no tiene stock disponible");
+        }
+        
+        if (producto.getStock() < cantidad) {
+            throw new ValidacionException("Stock insuficiente. Disponible: " + producto.getStock() + ", Solicitado: " + cantidad);
+        }
+        
+        productoDAO.actualizarStock(idProducto, producto.getStock() - cantidad);
+        
+    } catch (Exception e) {
+        throw new ServiceException("Error al reducir stock del producto: " + e.getMessage(), e);
     }
-    
+}
     @Override
     public void eliminarProducto(int id) throws ServiceException {
         try {
@@ -155,17 +165,23 @@ public class ProductoServiceImpl implements ProductoService {
         }
     }
     
-    @Override
-    public boolean validarProducto(Producto producto) throws ServiceException {
-        if (producto == null) return false;
-        if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) return false;
-        if (producto.getPrecioUnitario() <= 0) return false;
-        if (producto.getStock() < 0) return false;
-        if (producto.getIdCategoria() <= 0) return false;
-        if (producto.getDescripcion() == null || producto.getDescripcion().trim().isEmpty()) {
-            System.out.println("Advertencia: Producto sin descripción");
-        }
-        
-        return true;
+   @Override
+public boolean validarProducto(Producto producto) throws ServiceException {
+    if (producto == null) return false;
+    if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) return false;
+    if (producto.getPrecioUnitario() <= 0) return false;
+    if (producto.getStock() < 0) return false;
+    if (producto.getIdCategoria() <= 0) return false;
+    
+    // Validar que la fecha no sea nula
+    if (producto.getFechaCreacion() == null) {
+        producto.setFechaCreacion(LocalDate.now()); // Auto-corrección
     }
+    
+    if (producto.getDescripcion() == null || producto.getDescripcion().trim().isEmpty()) {
+        System.out.println("Advertencia: Producto sin descripción");
+    }
+    
+    return true;
+}
 }

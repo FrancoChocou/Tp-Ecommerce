@@ -15,7 +15,7 @@ import java.util.Properties;
 public class DatabaseConfig {
     private static final String URL = "jdbc:mysql://localhost:3306/ecommerce_stats";
     private static final String USER = "root";
-    private static final String PASSWORD = "1235";
+    private static final String PASSWORD = "4899380aaron";
     
     private static DatabaseConfig instance;
     private Connection connection;

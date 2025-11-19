@@ -1,6 +1,7 @@
 package com.idra.gestionpeluqueria.view.panels;
 
 import com.idra.gestionpeluqueria.controller.ProductoController;
+import com.idra.gestionpeluqueria.controller.CategoriaController;
 import com.idra.gestionpeluqueria.exception.ServiceException;
 import java.util.List;
 import com.idra.gestionpeluqueria.model.Producto;
@@ -25,12 +26,14 @@ public class ProductoPanel extends JPanel {
     private JTextField txtBuscar;
     private JComboBox<String> comboFiltroCategoria;
     private ProductoController productoController;
+    private CategoriaController categoriaController;
 
     /**
      * Constructor que inicializa el panel de productos y sus componentes.
      */
     public ProductoPanel() {
         this.productoController = new ProductoController();
+        this.categoriaController = new CategoriaController();
         initializeUI();
     }
 
@@ -88,16 +91,13 @@ public class ProductoPanel extends JPanel {
         JLabel lblFiltro = new JLabel("Filtrar por categoría:");
         lblFiltro.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 
-        // Categorias de Electrodomesticos
-        String[] categoriasElectrodomesticos = {
-            "Todas", "Audio", "Barberia", "Bicicletas", "Camaras", "Celulares",
-            "Cocinas", "Colchones", "Freezers", "Heladeras", "Impresoras",
-            "Jardin", "Lavarropas", "Notebooks", "Secarropas", "Soportes",
-            "Tablets", "Tv"
-        };
-        comboFiltroCategoria = new JComboBox<>(categoriasElectrodomesticos);
+        // Categorías dinámicas desde BD
+        comboFiltroCategoria = new JComboBox<>();
         comboFiltroCategoria.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         comboFiltroCategoria.addActionListener(e -> filtrarPorCategoria());
+        
+        // Cargar categorías desde BD
+        cargarCategoriasEnComboBox();
 
         // Búsqueda
         JPanel searchPanel = new JPanel(new BorderLayout(5, 0));
@@ -132,6 +132,30 @@ public class ProductoPanel extends JPanel {
         toolbarPanel.add(filterPanel);
 
         add(toolbarPanel, BorderLayout.SOUTH);
+    }
+
+    private void cargarCategoriasEnComboBox() {
+        try {
+            comboFiltroCategoria.removeAllItems();
+            comboFiltroCategoria.addItem("Todas"); // Opción por defecto
+            
+            List<String> categorias = categoriaController.listarNombresCategorias();
+            for (String categoria : categorias) {
+                comboFiltroCategoria.addItem(categoria);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al cargar categorías: " + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
+            
+            // Fallback: cargar categorías por defecto
+            comboFiltroCategoria.addItem("Electrodomésticos");
+            comboFiltroCategoria.addItem("Tecnología");
+            comboFiltroCategoria.addItem("Hogar");
+            comboFiltroCategoria.addItem("Deportes");
+            comboFiltroCategoria.addItem("Moda");
+        }
     }
 
     private JButton createToolbarButton(String text, Color color) {
@@ -171,7 +195,7 @@ public class ProductoPanel extends JPanel {
     tablaProductos.setRowHeight(35);
     tablaProductos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     tablaProductos.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-    tablaProductos.getTableHeader().setBackground(new Color(50, 50, 50));
+    tablaProductos.getTableHeader().setBackground(new Color(20, 20, 20));
     tablaProductos.getTableHeader().setForeground(Color.WHITE);
     tablaProductos.getTableHeader().setReorderingAllowed(false);
     tablaProductos.setBackground(Color.WHITE);
@@ -488,27 +512,28 @@ public class ProductoPanel extends JPanel {
 
     
     private String obtenerNombreCategoriaPorId(int idCategoria) {
-        String[] categorias = {
-            "", "Audio", "Barberia", "Bicicletas", "Camaras", "Celulares",
-            "Cocinas", "Colchones", "Freezers", "Heladeras", "Impresoras",
-            "Jardin", "Lavarropas", "Notebooks", "Secarropas", "Soportes",
-            "Tablets", "Tv"
-        };
-        return idCategoria >= 0 && idCategoria < categorias.length ? categorias[idCategoria] : "Desconocida";
+        try {
+            return categoriaController.obtenerNombreCategoriaPorId(idCategoria);
+        } catch (Exception e) {
+            // Fallback por si hay error
+            String[] categoriasFallback = {"", "Electrodomésticos", "Tecnología", "Hogar", "Deportes", "Moda"};
+            return (idCategoria >= 0 && idCategoria < categoriasFallback.length) 
+                ? categoriasFallback[idCategoria] : "Desconocida";
+        }
     }
 
     private int obtenerIdCategoriaPorNombre(String nombreCategoria) {
-        String[] categorias = {
-            "", "Audio", "Barberia", "Bicicletas", "Camaras", "Celulares",
-            "Cocinas", "Colchones", "Freezers", "Heladeras", "Impresoras",
-            "Jardin", "Lavarropas", "Notebooks", "Secarropas", "Soportes",
-            "Tablets", "Tv"
-        };
-        for (int i = 1; i < categorias.length; i++) {
-            if (categorias[i].equals(nombreCategoria)) {
-                return i;
+        try {
+            return categoriaController.obtenerIdCategoriaPorNombre(nombreCategoria);
+        } catch (Exception e) {
+            // Fallback por si hay error
+            String[] categoriasFallback = {"", "Electrodomésticos", "Tecnología", "Hogar", "Deportes", "Moda"};
+            for (int i = 1; i < categoriasFallback.length; i++) {
+                if (categoriasFallback[i].equals(nombreCategoria)) {
+                    return i;
+                }
             }
+            return 1; // Default a Electrodomésticos
         }
-        return 1; 
     }
 }

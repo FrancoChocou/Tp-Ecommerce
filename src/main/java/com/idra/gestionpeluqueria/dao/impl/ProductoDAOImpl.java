@@ -1,5 +1,5 @@
 package com.idra.gestionpeluqueria.dao.impl;
-
+import java.time.LocalDate;
 import com.idra.gestionpeluqueria.model.Producto;
 import com.idra.gestionpeluqueria.config.DatabaseConfig;
 import com.idra.gestionpeluqueria.exception.DAOException;
@@ -22,38 +22,48 @@ public class ProductoDAOImpl implements ProductoDAO {
     }
 
     @Override
-    public void crear(Producto producto) throws DAOException {
-        String sql = "INSERT INTO productos (nombre, descripcion, id_categoria, precio_unitario, stock, activo, fecha_creacion) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
+   public void crear(Producto producto) throws DAOException {
+        String sql = "INSERT INTO productos (nombre, descripcion, id_categoria, precio_unitario, stock, activo, fecha_creacion) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = DatabaseConfig.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            // Asegurar que la fecha no sea nula
+            LocalDate fechaCreacion = producto.getFechaCreacion();
+            if (fechaCreacion == null) {
+                fechaCreacion = LocalDate.now();
+                producto.setFechaCreacion(fechaCreacion);
+            }
+            
             stmt.setString(1, producto.getNombre());
             stmt.setString(2, producto.getDescripcion());
             stmt.setInt(3, producto.getIdCategoria());
             stmt.setDouble(4, producto.getPrecioUnitario());
             stmt.setInt(5, producto.getStock());
             stmt.setBoolean(6, producto.isActivo());
-            stmt.setDate(7, Date.valueOf(producto.getFechaCreacion()));
-
+            stmt.setDate(7, java.sql.Date.valueOf(fechaCreacion)); // Usar fecha asegurada
+            
             int affectedRows = stmt.executeUpdate();
-
+            
             if (affectedRows == 0) {
-                throw new DAOException("Error al crear producto, ninguna fila afectada.");
+                throw new DAOException("Error al crear producto, ninguna fila afectada");
             }
-
+            
+            // Obtener el ID generado
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     producto.setId(generatedKeys.getInt(1));
                 } else {
-                    throw new DAOException("Error al obtener ID generado para el producto.");
+                    throw new DAOException("Error al obtener ID generado para el producto");
                 }
             }
-
+            
         } catch (SQLException e) {
-            throw new DAOException("Error al crear producto en la base de datos", e);
+            throw new DAOException("Error al crear producto en la base de datos: " + e.getMessage(), e);
         }
     }
-
+    
     @Override
     public Producto buscarPorId(int id) throws DAOException {
         String sql = "SELECT * FROM productos WHERE id = ?";

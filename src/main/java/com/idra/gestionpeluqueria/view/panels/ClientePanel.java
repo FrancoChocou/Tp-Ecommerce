@@ -1,33 +1,24 @@
 package com.idra.gestionpeluqueria.view.panels;
 
 import com.idra.gestionpeluqueria.controller.ClienteController;
+import com.idra.gestionpeluqueria.exception.ServiceException;
+import java.util.List;
 import com.idra.gestionpeluqueria.model.Cliente;
 import com.idra.gestionpeluqueria.view.dialogs.ClienteDialog;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import com.idra.gestionpeluqueria.exception.ServiceException;
 import java.awt.*;
-import java.util.List;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 
-/**
- * Panel para la gestion de clientes en el e-commerce. Proporciona una interfaz
- * para visualizar, agregar, editar, eliminar y buscar clientes. Incluye una
- * tabla con todos los clientes y botones para realizar las operaciones CRUD.
- *
- * @author Idra
- */
 public class ClientePanel extends JPanel {
 
     private JTable tablaClientes;
     private DefaultTableModel tableModel;
-    private JButton btnAgregar, btnEditar, btnEliminar, btnBuscar;
+    private JButton btnAgregar, btnEditar, btnEliminar, btnActivarDesactivar, btnBuscar;
     private JTextField txtBuscar;
     private ClienteController clienteController;
 
-    /**
-     * Constructor que inicializa el panel de clientes y sus componentes.
-     */
     public ClientePanel() {
         this.clienteController = new ClienteController();
         initializeUI();
@@ -35,70 +26,64 @@ public class ClientePanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout(10, 10));
-        setBackground(new Color(230, 240, 255));
+        setBackground(new Color(245, 245, 245));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Crear componentes
         createHeaderPanel();
         createTablePanel();
         createToolbar();
-
-        // Cargar datos iniciales
         actualizarTabla();
     }
 
     private void createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(230, 240, 255));
+        headerPanel.setBackground(new Color(245, 245, 245));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
 
         JLabel titleLabel = new JLabel("Gestión de Clientes");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        titleLabel.setForeground(new Color(50, 50, 50));
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        titleLabel.setForeground(new Color(40, 40, 40));
 
-        JLabel subtitleLabel = new JLabel("Administre la información de los clientes del e-commerce");
+        JLabel subtitleLabel = new JLabel("Administre los clientes del sistema");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitleLabel.setForeground(new Color(100, 100, 100));
 
         JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(new Color(240, 240, 240));
+        titlePanel.setBackground(new Color(245, 245, 245));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         titlePanel.add(titleLabel, BorderLayout.NORTH);
         titlePanel.add(subtitleLabel, BorderLayout.CENTER);
 
         headerPanel.add(titlePanel, BorderLayout.WEST);
-
         add(headerPanel, BorderLayout.NORTH);
     }
 
     private void createToolbar() {
         JPanel toolbarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        toolbarPanel.setBackground(new Color(240, 240, 240));
-        toolbarPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        toolbarPanel.setBackground(new Color(245, 245, 245));
+        toolbarPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
 
-        // Botón Agregar
-        btnAgregar = createToolbarButton("➕ Agregar Cliente", new Color(39, 174, 96));
-        btnAgregar.addActionListener(e -> abrirDialogoCliente(null));
-
-        // Botón Editar
-        btnEditar = createToolbarButton("✏️ Editar", new Color(41, 128, 185));
-        btnEditar.addActionListener(e -> editarClienteSeleccionado());
-
-        // Botón Eliminar
+        btnAgregar = createToolbarButton("➕ Agregar Cliente", new Color(46, 204, 113));
+        btnEditar = createToolbarButton("✏️ Editar", new Color(52, 152, 219));
         btnEliminar = createToolbarButton("🗑️ Eliminar", new Color(231, 76, 60));
-        btnEliminar.addActionListener(e -> eliminarClienteSeleccionado());
+        btnActivarDesactivar = createToolbarButton("⚡ Estado", new Color(243, 156, 18));
 
-        // Campo de búsqueda
-        JPanel searchPanel = new JPanel(new BorderLayout(5, 0));
-        searchPanel.setBackground(new Color(240, 240, 240));
+        btnAgregar.addActionListener(e -> { abrirDialogoCliente((Cliente) null);
+});     btnEditar.addActionListener(e -> editarClienteSeleccionado());
+        btnEliminar.addActionListener(e -> eliminarClienteSeleccionado());
+        btnActivarDesactivar.addActionListener(e -> cambiarEstadoCliente());
+
+        // Búsqueda
+    JPanel searchPanel = new JPanel(new BorderLayout(5, 0));
+        searchPanel.setBackground(new Color(245, 245, 245));
 
         JLabel lblBuscar = new JLabel("Buscar:");
-        lblBuscar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblBuscar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        lblBuscar.setForeground(new Color(80, 80, 80));
 
-        txtBuscar = new JTextField(20);
+        txtBuscar = new JTextField(15);
         txtBuscar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        txtBuscar.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(5, 8, 5, 8)
-        ));
+        txtBuscar.setPreferredSize(new Dimension(150, 30));
 
         btnBuscar = createToolbarButton("🔍 Buscar", new Color(155, 89, 182));
         btnBuscar.addActionListener(e -> buscarClientes());
@@ -112,6 +97,8 @@ public class ClientePanel extends JPanel {
         toolbarPanel.add(btnEditar);
         toolbarPanel.add(Box.createHorizontalStrut(10));
         toolbarPanel.add(btnEliminar);
+        toolbarPanel.add(Box.createHorizontalStrut(10));
+        toolbarPanel.add(btnActivarDesactivar);
         toolbarPanel.add(Box.createHorizontalStrut(30));
         toolbarPanel.add(searchPanel);
 
@@ -124,25 +111,34 @@ public class ClientePanel extends JPanel {
         button.setBackground(color);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(color.darker(), 1),
+            BorderFactory.createEmptyBorder(8, 15, 8, 15)
+        ));
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 button.setBackground(color.darker());
+                button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(color.darker().darker(), 1),
+                    BorderFactory.createEmptyBorder(8, 15, 8, 15)
+                ));
             }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 button.setBackground(color);
+                button.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(color.darker(), 1),
+                    BorderFactory.createEmptyBorder(8, 15, 8, 15)
+                ));
             }
         });
-
         return button;
     }
 
     private void createTablePanel() {
-        // Modelo de tabla
-        String[] columnNames = {"ID", "Nombre", "Apellido", "Teléfono", "Email", "Edad", "Ciudad", "Fecha Registro", "Activo"};
+        String[] columnNames = {"ID", "Nombre", "Apellido", "Email", "Teléfono", "Estado"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -152,103 +148,137 @@ public class ClientePanel extends JPanel {
 
         tablaClientes = new JTable(tableModel);
 
+        // ESTILOS DE TABLA INTEGRADOS
         tablaClientes.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tablaClientes.setRowHeight(35);
         tablaClientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        tablaClientes.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
-        tablaClientes.getTableHeader().setBackground(new Color(50, 50, 50));
-        tablaClientes.getTableHeader().setForeground(Color.WHITE);
-        tablaClientes.getTableHeader().setReorderingAllowed(false);
+        
+        // HEADER CON COLOR OSCURO
+        JTableHeader header = tablaClientes.getTableHeader();
+        header.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        header.setBackground(new Color(45, 45, 45));
+        header.setForeground(Color.WHITE);
+        header.setReorderingAllowed(false);
 
         tablaClientes.setBackground(Color.WHITE);
-        tablaClientes.setForeground(Color.BLACK);
-        tablaClientes.setGridColor(new Color(220, 220, 220));
+        tablaClientes.setForeground(new Color(60, 60, 60));
+        tablaClientes.setGridColor(new Color(240, 240, 240));
         tablaClientes.setSelectionBackground(new Color(70, 130, 180));
         tablaClientes.setSelectionForeground(Color.WHITE);
         tablaClientes.setFillsViewportHeight(true);
 
-        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer() {
+        // RENDERER PARA FILAS ALTERNADAS
+        tablaClientes.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                     boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
+                
                 if (!isSelected) {
-                    c.setForeground(Color.BLACK);
-                    c.setBackground(Color.WHITE);
+                    c.setForeground(new Color(60, 60, 60));
+                    c.setBackground(row % 2 == 0 ? new Color(250, 250, 250) : Color.WHITE);
                 } else {
                     c.setForeground(Color.WHITE);
                     c.setBackground(new Color(70, 130, 180));
                 }
-
+                
                 return c;
             }
-        };
+        });
 
-        
-        for (int i = 0; i < tablaClientes.getColumnCount(); i++) {
-            tablaClientes.getColumnModel().getColumn(i).setCellRenderer(renderer);
-        }
+        // RENDERER ESPECIAL PARA COLUMNA ESTADO
+        tablaClientes.getColumnModel().getColumn(4).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                
+                if (!isSelected && value != null) {
+                    String estado = value.toString();
+                    if (estado.equals("Activo")) {
+                        c.setBackground(new Color(220, 255, 220));
+                        c.setForeground(new Color(0, 128, 0));
+                    } else {
+                        c.setBackground(new Color(255, 220, 220));
+                        c.setForeground(new Color(128, 0, 0));
+                    }
+                } else if (isSelected) {
+                    c.setBackground(table.getSelectionBackground());
+                    c.setForeground(table.getSelectionForeground());
+                }
+                
+                setHorizontalAlignment(SwingConstants.CENTER);
+                return c;
+            }
+        });
 
         JScrollPane scrollPane = new JScrollPane(tablaClientes);
-        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
         scrollPane.getViewport().setBackground(Color.WHITE);
-
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void abrirDialogoCliente(Object[] datosCliente) {
-        Cliente cliente = null;
-        String titulo = "Agregar Cliente";
+   private void abrirDialogoCliente(Cliente cliente) {  // ✅ Cambiar parámetro a Cliente
+    String titulo = "Agregar Cliente";
 
-        if (datosCliente != null) {
-            
-            cliente = new Cliente();
-            cliente.setId((Integer) datosCliente[0]);
-            cliente.setNombre(datosCliente[1].toString());
-            cliente.setApellido(datosCliente[2].toString());
-            cliente.setTelefono(datosCliente[3].toString());
-            cliente.setEmail(datosCliente[4].toString());
-            cliente.setEdad((Integer) datosCliente[5]);
-            cliente.setIdZona((Integer) datosCliente[6]);
-            titulo = "Editar Cliente";
-        }
-
-        // Buscar el JFrame padre
-        Window parentWindow = SwingUtilities.getWindowAncestor(this);
-        JFrame parentFrame = null;
-        if (parentWindow instanceof JFrame) {
-            parentFrame = (JFrame) parentWindow;
-        }
-
-        ClienteDialog dialog = new ClienteDialog(parentFrame, titulo, cliente);
-        dialog.setVisible(true);
-
-        if (dialog.isGuardadoExitoso()) {
-            actualizarTabla(); 
-        }
+    if (cliente != null) {
+        titulo = "Editar Cliente";
     }
 
-    private void editarClienteSeleccionado() {
-        int filaSeleccionada = tablaClientes.getSelectedRow();
-        if (filaSeleccionada == -1) {
+    Window parentWindow = SwingUtilities.getWindowAncestor(this);
+    JFrame parentFrame = null;
+    if (parentWindow instanceof JFrame) {
+        parentFrame = (JFrame) parentWindow;
+    }
+
+    // ✅ Pasar el objeto Cliente directamente
+    ClienteDialog dialog = new ClienteDialog(parentFrame, titulo, cliente);
+    dialog.setVisible(true);
+
+    if (dialog.isGuardadoExitoso()) {
+        actualizarTabla();
+        JOptionPane.showMessageDialog(this,
+                "Los cambios se han guardado correctamente.",
+                "Guardado Exitoso",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+}
+
+// ✅ Sobrecargar el método para mantener compatibilidad (si es necesario)
+
+   private void editarClienteSeleccionado() {
+    int filaSeleccionada = tablaClientes.getSelectedRow();
+    if (filaSeleccionada == -1) {
+        JOptionPane.showMessageDialog(this,
+                "Por favor, seleccione un cliente para editar.",
+                "Selección Requerida",
+                JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int idCliente = (Integer) tableModel.getValueAt(filaSeleccionada, 0);
+    
+    try {
+        // ✅ CORREGIDO: Obtener el cliente COMPLETO desde la base de datos
+        Cliente cliente = clienteController.buscarClientePorId(idCliente);
+        
+        if (cliente != null) {
+            // ✅ Pasar el objeto Cliente completo, no los datos de la tabla
+            abrirDialogoCliente(cliente);
+        } else {
             JOptionPane.showMessageDialog(this,
-                    "Por favor, seleccione un cliente para editar.",
-                    "Selección Requerida",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
+                    "No se pudo encontrar el cliente seleccionado.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
-
-        // Obtener datos del cliente seleccionado
-        Object[] datosCliente = new Object[tableModel.getColumnCount()];
-        for (int i = 0; i < tableModel.getColumnCount(); i++) {
-            datosCliente[i] = tableModel.getValueAt(filaSeleccionada, i);
-        }
-
-        abrirDialogoCliente(datosCliente);
+        
+    } catch (ServiceException e) {
+        JOptionPane.showMessageDialog(this,
+                "Error al cargar cliente: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
     }
-
+}
     private void eliminarClienteSeleccionado() {
         int filaSeleccionada = tablaClientes.getSelectedRow();
         if (filaSeleccionada == -1) {
@@ -259,25 +289,19 @@ public class ClientePanel extends JPanel {
             return;
         }
 
-        // Obtener el ID del cliente seleccionado
         int idCliente = (Integer) tableModel.getValueAt(filaSeleccionada, 0);
-        String nombreCliente = tableModel.getValueAt(filaSeleccionada, 1) + " "
-                + tableModel.getValueAt(filaSeleccionada, 2);
+        String nombreCliente = tableModel.getValueAt(filaSeleccionada, 1).toString();
 
         int confirmacion = JOptionPane.showConfirmDialog(this,
-                "¿Está seguro que desea eliminar al cliente:\n" + nombreCliente + "?",
+                "¿Está seguro que desea eliminar el cliente:\n" + nombreCliente + "?",
                 "Confirmar Eliminación",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
 
         if (confirmacion == JOptionPane.YES_OPTION) {
             try {
-                // Eliminar de la base de datos
                 clienteController.eliminarCliente(idCliente);
-
-                // Eliminar de la tabla visual
                 tableModel.removeRow(filaSeleccionada);
-
                 JOptionPane.showMessageDialog(this,
                         "Cliente eliminado correctamente.",
                         "Eliminación Exitosa",
@@ -292,84 +316,86 @@ public class ClientePanel extends JPanel {
         }
     }
 
-    private void buscarClientes() {
-        String textoBusqueda = txtBuscar.getText().trim().toLowerCase();
-        if (textoBusqueda.isEmpty()) {
-            actualizarTabla();
+    private void cambiarEstadoCliente() {
+        int fila = tablaClientes.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
+        int idCliente = (Integer) tableModel.getValueAt(fila, 0);
+        String estadoActual = tableModel.getValueAt(fila, 4).toString();
+        String nuevoEstado = estadoActual.equals("Activo") ? "Inactivo" : "Activo";
+
         try {
-            
-            List<Cliente> clientesEncontrados = clienteController.buscarPorNombre(textoBusqueda);
+            Cliente cliente = clienteController.buscarClientePorId(idCliente);
+            cliente.setActivo(nuevoEstado.equals("Activo"));
+            clienteController.actualizarCliente(cliente);
 
-            // Limpiar tabla y mostrar resultados
-            tableModel.setRowCount(0);
-            for (Cliente cliente : clientesEncontrados) {
-                Object[] fila = {
-                    cliente.getId(),
-                    cliente.getNombre(),
-                    cliente.getApellido(),
-                    cliente.getTelefono(),
-                    cliente.getEmail(),
-                    cliente.getEdad(),
-                    cliente.getIdZona(),
-                    cliente.getFechaRegistro(),
-                    cliente.isActivo() ? "Sí" : "No"
-                };
-                tableModel.addRow(fila);
-            }
-
-            if (tableModel.getRowCount() == 0) {
-                JOptionPane.showMessageDialog(this,
-                        "No se encontraron clientes que coincidan con la búsqueda: " + textoBusqueda,
-                        "Búsqueda Sin Resultados",
-                        JOptionPane.INFORMATION_MESSAGE);
-                actualizarTabla();
-            }
+            tableModel.setValueAt(nuevoEstado, fila, 4);
 
         } catch (ServiceException e) {
             JOptionPane.showMessageDialog(this,
-                    "Error al buscar clientes: " + e.getMessage(),
+                    "Error al cambiar estado del cliente: " + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    /**
-     * Actualiza la tabla de clientes con los datos más recientes de la base de
-     * datos. Limpia la tabla actual y la llena con todos los clientes
-     * registrados.
-     */
+    private void buscarClientes() {
+    String textoBusqueda = txtBuscar.getText().trim().toLowerCase();
+    if (textoBusqueda.isEmpty()) {
+        actualizarTabla();
+        return;
+    }
+
+    try {
+        tableModel.setRowCount(0);
+        // ✅ CORREGIDO: Cambiar buscarClientesPorNombre() por buscarPorNombre()
+        List<Cliente> clientes = clienteController.buscarPorNombre(textoBusqueda);
+
+        for (Cliente cliente : clientes) {
+            Object[] fila = {
+                cliente.getId(),
+                cliente.getNombre(),
+                cliente.getApellido(),
+                cliente.getEmail(),
+                cliente.getTelefono(),
+                cliente.isActivo() ? "Activo" : "Inactivo"
+            };
+            tableModel.addRow(fila);
+        }
+
+    } catch (ServiceException e) {
+        JOptionPane.showMessageDialog(this,
+                "Error al buscar clientes: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
+}
+
     public void actualizarTabla() {
-        try {
-            tableModel.setRowCount(0); 
+    try {
+        tableModel.setRowCount(0);
+        List<Cliente> clientes = clienteController.listarTodos();
 
-            // Obtener clientes reales de la base de datos 
-            List<Cliente> clientes = clienteController.listarTodos();
-
-            // Llenar la tabla con datos reales
-            for (Cliente cliente : clientes) {
-                Object[] fila = {
-                    cliente.getId(),
-                    cliente.getNombre(),
-                    cliente.getApellido(),
-                    cliente.getTelefono(),
-                    cliente.getEmail(),
-                    cliente.getEdad(),
-                    cliente.getIdZona(),
-                    cliente.getFechaRegistro(),
-                    cliente.isActivo() ? "Sí" : "No"
-                };
-                tableModel.addRow(fila);
-            }
-
-        } catch (ServiceException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error al cargar clientes: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+        for (Cliente cliente : clientes) {
+            Object[] fila = {
+                cliente.getId(),
+                cliente.getNombre(),
+                cliente.getApellido(),    // ✅ Columna 2: Apellido
+                cliente.getEmail(),       // ✅ Columna 3: Email  
+                cliente.getTelefono(),    // ✅ Columna 4: Teléfono
+                cliente.isActivo() ? "Activo" : "Inactivo" // ✅ Columna 5: Estado
+            };
+            tableModel.addRow(fila);
         }
+
+    } catch (ServiceException e) {
+        JOptionPane.showMessageDialog(this,
+                "Error al cargar clientes: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
     }
+}
 }
