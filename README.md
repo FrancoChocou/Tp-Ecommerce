@@ -128,6 +128,8 @@ Nachoogutierrez452@gmail.com
 
 sergio.bravo.9406@gmail.com 
 
+ezequielmartinez@gmail.com
+
 📄 Licencia
 
 Este proyecto es de código abierto y está disponible bajo la licencia MIT.
